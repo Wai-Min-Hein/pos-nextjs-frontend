@@ -31,6 +31,8 @@ const config = {
 
         'gray': '#e7e7e5',
 
+        'red':'#ff2d55',
+
 
 
 

@@ -16,20 +16,10 @@ import { LuEye } from "react-icons/lu";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline } from "react-icons/md";
 import ActionHeader from "@/components/ActionHeader";
+import { useGetAllFnb } from "@/utils/TanStackHooks/useSystem";
 
 const FnB = () => {
-  const [fnbDatas, setFnbDatas] = useState<fnbInterface[]>([]);
-  const getDatas = async () => {
-    const data = await fetch("https://pos-t6g7.onrender.com/fnb").then((res) =>
-      res.json()
-    );
-
-    setFnbDatas(data.datas);
-  };
-
-  useEffect(() => {
-    getDatas();
-  }, []);
+  const { data: fnbDatas, isLoading, isError } = useGetAllFnb();
 
   const handleAddClick = (): void => {
     console.log("Clicked Add");
@@ -38,6 +28,21 @@ const FnB = () => {
   const handleImportClick = (): void => {
     console.log("Clicked Import");
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 p-4 ">
+        <ActionHeader
+          title="FnB Menus List"
+          description="Manage FnB Menus"
+          excelIcon={excel}
+          handleAddClick={handleAddClick}
+          handleImportClick={handleImportClick}
+        />
+        <div className="">Loading.....</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 p-4 ">
@@ -61,7 +66,7 @@ const FnB = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {fnbDatas.map((fnb) => (
+          {fnbDatas?.map((fnb) => (
             <TableRow key={fnb._id}>
               <TableCell className="font-medium">{fnb.name}</TableCell>
               <TableCell className="font-medium">{fnb.category}</TableCell>

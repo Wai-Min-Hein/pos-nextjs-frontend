@@ -1,16 +1,11 @@
-import TobBar from "@/components/TobBar";
-import SideNav from "@/components/ui/sideNav";
+"use client";
+
+import React from "react";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <main className="px-6">
-      <TobBar/>
-
-        {children}
-    </main>
-  );
+  return <main className="px-6 pb-6">{children}</main>;
 }

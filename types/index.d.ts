@@ -36,3 +36,9 @@ declare type fnbInterface = {
   createdByImage: string;
   unit: string;
 }
+
+declare type customerServiceAreaInterface = {
+  _id: string;
+    code: string;
+    name: string;
+}

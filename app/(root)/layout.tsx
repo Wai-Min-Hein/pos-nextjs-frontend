@@ -8,10 +8,8 @@ export default function RootLayout({
 }>) {
   return (
     <main className="px-6">
-      <TobBar/>
       <section className="flex items-start justify-start  ">
         <SideNav />
-
         {children}
       </section>
     </main>

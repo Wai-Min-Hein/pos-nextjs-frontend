@@ -28,7 +28,7 @@ const TobBar = () => {
   return (
     <nav className="flex items-center justify-start py-2 gap-6">
       <div className="basis-1/5 ">
-        <Link href={"/"}>
+        <Link href={"/system/fnb"}>
           <div className="relative w-24 h-12">
             <Image
               src={"/images/logo.png"}
