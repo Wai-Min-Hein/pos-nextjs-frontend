@@ -42,3 +42,23 @@ declare type customerServiceAreaInterface = {
     code: string;
     name: string;
 }
+
+
+declare type  productCategoryInterface  ={
+  _id: string;
+  code: string;
+  name: string;
+  created_on?: string;
+  status: string;
+  productCount: number
+}
+
+declare type  productInterface  ={
+  _id: string;
+  sku: string;
+  unit: string;
+  name: string;
+  createBy?: string;
+  image: string;
+  category: productCategoryInterface
+}

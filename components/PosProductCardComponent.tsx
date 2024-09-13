@@ -1,18 +1,21 @@
-import { branch } from "@/constant/image";
+import {  jacket } from "@/constant/image";
 import Image from "next/image";
 import React from "react";
 
-const PosProductCardComponent = () => {
+const PosProductCardComponent = ({sku,name,unit, category}: {sku:string, name:string, unit:string, category:string}) => {
   return (
-    <div className="basis-[22%] select-none cursor-pointer">
-      <div className="relative w-12 h-12">
-        <Image src={branch} alt="Category" fill objectFit="cover" />
+    <div className="basis-[22%] select-none cursor-pointer bg-white px-3 py-4 rounded shadow-md">
+      <div className="group/img grid place-items-center p-6 bg-gray rounded-md">
+        <div className="relative w-20 h-20 group-hover/img:scale-125 duration-300">
+          <Image src={jacket} alt="Category" fill objectFit="cover" />
+        </div>
       </div>
-      <strong className="block">Mobile</strong>
-      <strong  className="block">Samsung S24 ultra</strong>
+      
+      <strong className="block text-paraText">{category}</strong>
+      <strong  className="block text-headerText">{name}</strong>
 
       <div className="flex items-center justify-between">
-        <span>30 pcs</span>
+        <span>30 {unit}</span>
         <span>$ 2000</span>
       </div>
     </div>

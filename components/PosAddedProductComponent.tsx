@@ -1,4 +1,4 @@
-import { branch } from "@/constant/image";
+import { branch,jacket } from "@/constant/image";
 import Image from "next/image";
 import React from "react";
 import { FiEdit, FiMinusCircle, FiPlusCircle } from "react-icons/fi";
@@ -9,9 +9,12 @@ const PosAddedProductComponent = () => {
   return (
     <div className="flex items-center justify-between gap-6 my-4 select-none">
       <div className="flex items-center justify-start gap-6">
-        <div className="relative w-12 h-12">
-          <Image src={branch} alt="Category" fill objectFit="cover" />
+        <div className="bg-gray rounded-sm p-2">
+          <div className="relative w-12 h-12">
+            <Image src={jacket} alt="Category" fill objectFit="cover" />
+          </div>
         </div>
+        
 
         <div className="flex flex-col">
           <span>001</span>

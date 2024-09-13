@@ -16,7 +16,7 @@ import PosAddedProductComponent from "@/components/PosAddedProductComponent";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 const PosRightSide = () => {
   return (
-    <div className="basis-1/3 flex flex-col gap-6">
+    <div className="basis-1/3 flex flex-col gap-6 p-6">
 
       <div id="order_info" className="">
         <h6>Order List</h6>
@@ -24,7 +24,7 @@ const PosRightSide = () => {
       </div>
 
       <div id="cus_info" className="">
-        <h6>Customer Information</h6>
+        <h6 className="py-4">Customer Information</h6>
         <div className="flex items-center justify-between gap-4">
           <Select>
             <SelectTrigger className="w-full">

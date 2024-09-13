@@ -10,6 +10,8 @@ import { SlRefresh } from "react-icons/sl";
 const Pos = () => {
   const { isPending, isError, data: areas, error, isLoading } = useGetAllCsa();
 
+
+
   const [currentTable, setCurrentTable] = useState<string>();
 
   const router = useRouter();

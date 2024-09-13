@@ -20,6 +20,7 @@ import mobile from '../public/images/mobile.png';
 import product from '../public/images/product.png';
 import stockOut from '../public/images/stockOut.png';
 import voucherPayment from '../public/images/voucherPayment.png';
+import jacket from '../public/images/jacket.png';
 
 
 export {
@@ -43,5 +44,6 @@ export {
   mobile,
   product,
   stockOut,
-  voucherPayment
+  voucherPayment,
+  jacket
 };
