@@ -80,7 +80,6 @@ async function getProductsByCategory(categoryId: string):Promise<productInterfac
                 ? `${baseApi}/product/${categoryId}` 
                 : `${baseApi}/product`;
 
-    console.log(url)
     try {
         const res = await fetch( url);
         if (!res.ok) {

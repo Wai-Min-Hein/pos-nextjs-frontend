@@ -10,6 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: "bg-primary text-white hover:bg-primary-hover duration-75",
+        underLine: "bg-transparent text-paraText rounded-none !px-0",
         category: "bg-btn text-white hover:bg-red duration-75",
         addNew: "bg-bgDark !p-12 text-white hover:bg-red duration-75",
         destructive:

@@ -62,3 +62,35 @@ declare type  productInterface  ={
   image: string;
   category: productCategoryInterface
 }
+
+
+declare type menuInterface = {
+  name: string;
+  price: number | string;
+  vat: number | string;
+  disPercent: number | string;
+  disAmount: number | string;
+  adjust: boolean;
+}
+
+
+declare type priceTableInterface = {
+  _id: string;
+
+    code: string;
+    name: string;
+    branch: string;
+    area: string;
+    startDate: Date | null;
+    endDate: Date | null;
+    menus: menuInterface[];
+  }
+
+declare type priceTableMenuInterface = {
+  menuId : string;
+  price: number;
+  vat: number;
+  disPercent: number;
+  disAmount: number;
+  adjust: boolean
+}
