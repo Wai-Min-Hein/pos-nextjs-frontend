@@ -16,33 +16,23 @@ import { LuEye } from "react-icons/lu";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline } from "react-icons/md";
 import ActionHeader from "@/components/ActionHeader";
-import { useGetAllFnb, useGetAllPriceTable } from "@/utils/TanStackHooks/useSystem";
+import {
+  useGetAllFnb,
+  useGetAllPriceTable,
+} from "@/utils/TanStackHooks/useSystem";
+import { useRouter } from "next/navigation";
 
 const PriceTable = () => {
   const { data: priceTableDatas, isLoading, isError } = useGetAllPriceTable();
+  const router = useRouter();
 
   const handleAddClick = (): void => {
-    console.log("Clicked Add");
+    router.push("/system/pricetable/new");
   };
 
   const handleImportClick = (): void => {
-    console.log("Clicked Import");
+    router.push("/system/pricetable/new");
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex-1 p-4 ">
-        <ActionHeader
-          title="Price Data List"
-          description="Manage Price Data"
-          excelIcon={excel}
-          handleAddClick={handleAddClick}
-          handleImportClick={handleImportClick}
-        />
-        <div className="">Loading.....</div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex-1 p-4 ">
@@ -53,48 +43,60 @@ const PriceTable = () => {
         handleAddClick={handleAddClick}
         handleImportClick={handleImportClick}
       />
-      <Table>
-        <TableHeader>
-          <TableRow>
-          <TableHead>Code</TableHead>
-            <TableHead className="w-[200px]">Name</TableHead>
-            <TableHead>Branch</TableHead>
-            <TableHead className="">Area</TableHead>
-            <TableHead>DateFrom</TableHead>
-            <TableHead>DateTo</TableHead>
-            <TableHead className="text-center">Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {priceTableDatas?.map((priceData) => (
-            <TableRow key={priceData._id}>
-              <TableCell className="font-medium">{priceData.code}</TableCell>
-              <TableCell className="font-medium">{priceData.name}</TableCell>
-              <TableCell className="font-medium">{priceData.branch}</TableCell>
-              <TableCell className="font-medium">{priceData.area}</TableCell>
-              <TableCell className="font-medium">{priceData.startDate && new Date(priceData.startDate).toLocaleDateString()}</TableCell>
-              <TableCell className="font-medium">{priceData.endDate && new Date(priceData.endDate).toLocaleDateString()}</TableCell>
-              
-              <TableCell className="font-medium">
-                <div className="flex items-center justify-center gap-x-2">
-                  <div className="w-8 h-8 grid place-items-center rounded border-2  border-gray cursor-pointer">
-                    <LuEye />
-                  </div>
-                  <div className="w-8 h-8 grid place-items-center rounded border-2 border-gray cursor-pointer">
-                    <TbEdit />
-                  </div>
-
-                  <div className="w-8 h-8 grid place-items-center rounded border-2 border-gray cursor-pointer">
-                    <MdDeleteOutline />
-                  </div>
-                </div>
-              </TableCell>
+      {!isLoading ? (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Code</TableHead>
+              <TableHead className="w-[200px]">Name</TableHead>
+              <TableHead>Branch</TableHead>
+              <TableHead className="">Area</TableHead>
+              <TableHead>DateFrom</TableHead>
+              <TableHead>DateTo</TableHead>
+              <TableHead className="text-center">Action</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {priceTableDatas?.map((priceData) => (
+              <TableRow key={priceData._id}>
+                <TableCell className="font-medium">{priceData.code}</TableCell>
+                <TableCell className="font-medium">{priceData.name}</TableCell>
+                <TableCell className="font-medium">
+                  {priceData.branch}
+                </TableCell>
+                <TableCell className="font-medium">{priceData.area}</TableCell>
+                <TableCell className="font-medium">
+                  {priceData.startDate &&
+                    new Date(priceData.startDate).toLocaleDateString()}
+                </TableCell>
+                <TableCell className="font-medium">
+                  {priceData.endDate &&
+                    new Date(priceData.endDate).toLocaleDateString()}
+                </TableCell>
+
+                <TableCell className="font-medium">
+                  <div className="flex items-center justify-center gap-x-2">
+                    <div className="w-8 h-8 grid place-items-center rounded border-2  border-gray cursor-pointer">
+                      <LuEye />
+                    </div>
+                    <div className="w-8 h-8 grid place-items-center rounded border-2 border-gray cursor-pointer">
+                      <TbEdit />
+                    </div>
+
+                    <div className="w-8 h-8 grid place-items-center rounded border-2 border-gray cursor-pointer">
+                      <MdDeleteOutline />
+                    </div>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      ) : (
+        <div className="">Loading .....</div>
+      )}
     </div>
   );
 };
 
-export default PriceTable
+export default PriceTable;

@@ -65,7 +65,7 @@ declare type  productInterface  ={
 
 
 declare type menuInterface = {
-  name: string;
+  menuId: string;
   price: number | string;
   vat: number | string;
   disPercent: number | string;
