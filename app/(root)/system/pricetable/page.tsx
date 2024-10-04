@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 
 const PriceTable = () => {
   const { data: priceTableDatas, isLoading, isError } = useGetAllPriceTable();
+ 
   const router = useRouter();
 
   const handleAddClick = (): void => {

@@ -18,7 +18,6 @@ import Applypolicy from "@/components/priceTable/applypolicy";
 import ActionHeader from "@/components/ActionHeader";
 
 const PriceTableDetails = () => {
-  const { toast } = useToast();
   const baseApi = process.env.NEXT_PUBLIC_BASE_API;
   const router = useRouter()
 

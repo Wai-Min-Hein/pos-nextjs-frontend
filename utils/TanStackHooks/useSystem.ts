@@ -1,5 +1,6 @@
 import { fnbInterface, priceTableInterface, priceTableMenuInterface } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 const baseApi = process.env.NEXT_PUBLIC_BASE_API;
 
@@ -37,6 +38,6 @@ export const useGetAllPriceTable = () => {
   });
 };
 
-// Function to post data to the API
+
 
 

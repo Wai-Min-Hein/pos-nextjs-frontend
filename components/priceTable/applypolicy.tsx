@@ -47,8 +47,7 @@ import { CalendarIcon, Save } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { priceTableMenuInterface } from "@/types";
 
-import { toast, useToast } from "@/hooks/use-toast";
-
+import toast, { Toaster } from 'react-hot-toast';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { boolean, z } from "zod";
@@ -64,8 +63,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
-import ProductDetailInfo from "@/components/priceTable/productDetailInfo";
 import { priceTableSchema } from "@/schema";
+import { useMutation } from "@tanstack/react-query";
 
 interface props {
   applyPolicy: boolean;
@@ -74,6 +73,36 @@ interface props {
 
 const Applypolicy = ({ applyPolicy, priceTableMenus }: props) => {
   const router = useRouter();
+
+  const baseApi = process.env.NEXT_PUBLIC_BASE_API;
+
+  const mutation = useMutation({
+    mutationFn: (data: {
+      code: string;
+      name: string;
+      branch: string;
+      area: string;
+      startDate: Date | undefined;
+      endDate: Date | undefined;
+      menus?: {
+        menuId: string;
+        price: number;
+        vat: number;
+        disPercent: number;
+        disAmount: number;
+        adjust: boolean;
+      }[];
+    }) => {
+      try {
+        const res = axios.post(`${baseApi}/pricetable`, data);
+        router.push("/system/pricetable");
+        toast('Price table data created successfully.')
+        return res;
+      } catch (error) {
+        throw error;
+      }
+    },
+  });
 
   const form = useForm<z.infer<typeof priceTableSchema>>({
     resolver: zodResolver(priceTableSchema),
@@ -98,14 +127,16 @@ const Applypolicy = ({ applyPolicy, priceTableMenus }: props) => {
   });
 
   async function onSubmit(formData: z.infer<typeof priceTableSchema>) {
-    console.log(formData);
+    mutation.mutate(formData);
   }
 
-  const onFormSubmit = () => {
+  const onFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     form.setValue("menus", priceTableMenus);
 
     form.handleSubmit(onSubmit)();
   };
+
   return (
     <div
       id="policy"
@@ -113,12 +144,14 @@ const Applypolicy = ({ applyPolicy, priceTableMenus }: props) => {
         applyPolicy ? "block" : "hidden"
       }`}
     >
+      <Toaster/>
+      
+      {mutation.isError ? (
+        toast(mutation.error.message)
+      ) : null}
+      
       <Form {...form}>
-        <form
-          // onSubmit={form.handleSubmit(onSubmit)}
-          className="w-2/3 space-y-6"
-          method="POST"
-        >
+        <form className="w-2/3 space-y-6" method="POST">
           <div className="">
             <h6>Price Table Information</h6>
             <div className="flex items-center justify-between">
@@ -292,9 +325,12 @@ const Applypolicy = ({ applyPolicy, priceTableMenus }: props) => {
               />
             </div>
           </div>
-
-          <Button onClick={onFormSubmit} type="submit">
-            Submit
+          <Button
+            onClick={onFormSubmit}
+            disabled={mutation.isPending}
+            type="submit"
+          >
+            {mutation.isPending ? "Loading ... " : "Submit"}
           </Button>
         </form>
       </Form>
