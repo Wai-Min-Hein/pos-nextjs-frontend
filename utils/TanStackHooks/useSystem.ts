@@ -21,6 +21,8 @@ export const useGetAllFnb = () => {
   });
 };
 
+
+
 async function getAllPriceTable(): Promise<priceTableInterface[]> {
   try {
     const res = await fetch(`${baseApi}/pricetable`);
@@ -32,9 +34,27 @@ async function getAllPriceTable(): Promise<priceTableInterface[]> {
 }
 
 export const useGetAllPriceTable = () => {
+  
   return useQuery({
     queryKey: ["pricetable"],
     queryFn: () => getAllPriceTable(),
+  });
+};
+
+async function getSinglePriceTable(id:string): Promise<priceTableInterface> {
+  try {
+    const res = await fetch(`${baseApi}/pricetable/${id}`);
+    const result = await res.json();
+    return result.datas;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const useGetSinglePriceTable = (id:string) => {
+  return useQuery({
+    queryKey: ["singlepricetable", id],
+    queryFn: () => getSinglePriceTable(id),
   });
 };
 

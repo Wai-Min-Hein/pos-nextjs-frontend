@@ -37,10 +37,17 @@ declare type fnbInterface = {
   unit: string;
 }
 
-declare type customerServiceAreaInterface = {
+declare interface customerServiceAreaInterface  {
   _id: string;
     code: string;
     name: string;
+}
+
+declare interface branchAreaInterface   extends customerServiceAreaInterface  {
+  
+    phone: string;
+    address: string
+
 }
 
 
@@ -66,10 +73,10 @@ declare type  productInterface  ={
 
 declare type menuInterface = {
   menuId: string;
-  price: number | string;
-  vat: number | string;
-  disPercent: number | string;
-  disAmount: number | string;
+  price: number ;
+  vat: number ;
+  disPercent: number ;
+  disAmount: number ;
   adjust: boolean;
 }
 
@@ -79,8 +86,8 @@ declare type priceTableInterface = {
 
     code: string;
     name: string;
-    branch: string;
-    area: string;
+    branch: branchAreaInterface;
+    area: customerServiceAreaInterface;
     startDate: Date | null;
     endDate: Date | null;
     menus: menuInterface[];

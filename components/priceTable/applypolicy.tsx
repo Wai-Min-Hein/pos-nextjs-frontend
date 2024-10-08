@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { HiOutlinePrinter } from "react-icons/hi";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { LuEye, LuMoveLeft, LuSave } from "react-icons/lu";
@@ -45,9 +45,13 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon, Save } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { priceTableMenuInterface } from "@/types";
+import {
+  menuInterface,
+  priceTableInterface,
+  priceTableMenuInterface,
+} from "@/types";
 
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { boolean, z } from "zod";
@@ -65,19 +69,28 @@ import {
 import { useRouter } from "next/navigation";
 import { priceTableSchema } from "@/schema";
 import { useMutation } from "@tanstack/react-query";
+import { useGetAllBranch, useGetAllCsa } from "@/utils/TanStackHooks/usePos";
 
 interface props {
   applyPolicy: boolean;
-  priceTableMenus: priceTableMenuInterface[];
+  priceTableMenus: menuInterface[];
+  currentPriceTableData: priceTableInterface | undefined;
 }
 
-const Applypolicy = ({ applyPolicy, priceTableMenus }: props) => {
+const Applypolicy = ({
+  applyPolicy,
+  priceTableMenus,
+  currentPriceTableData,
+}: props) => {
   const router = useRouter();
-
   const baseApi = process.env.NEXT_PUBLIC_BASE_API;
 
+  const { data: csas } = useGetAllCsa();
+  const { data: branches } = useGetAllBranch();
+
+
   const mutation = useMutation({
-    mutationFn: (data: {
+    mutationFn: async (data: {
       code: string;
       name: string;
       branch: string;
@@ -94,9 +107,40 @@ const Applypolicy = ({ applyPolicy, priceTableMenus }: props) => {
       }[];
     }) => {
       try {
-        const res = axios.post(`${baseApi}/pricetable`, data);
+        const res = await axios.post(`${baseApi}/pricetable`, data);
         router.push("/system/pricetable");
-        toast('Price table data created successfully.')
+        toast("Price table data created successfully.");
+        return res;
+      } catch (error) {
+        throw error;
+      }
+    },
+  });
+
+  const mutationUpdate = useMutation({
+    mutationFn: async (data: {
+      code: string;
+      name: string;
+      branch: string;
+      area: string;
+      startDate: Date | undefined;
+      endDate: Date | undefined;
+      menus?: {
+        menuId: string;
+        price: number;
+        vat: number;
+        disPercent: number;
+        disAmount: number;
+        adjust: boolean;
+      }[];
+    }) => {
+      try {
+        const res = await axios.post(
+          `${baseApi}/pricetable/${currentPriceTableData?._id}`,
+          data
+        );
+        router.push("/system/pricetable");
+        toast("Price table data updated successfully.");
         return res;
       } catch (error) {
         throw error;
@@ -127,7 +171,9 @@ const Applypolicy = ({ applyPolicy, priceTableMenus }: props) => {
   });
 
   async function onSubmit(formData: z.infer<typeof priceTableSchema>) {
-    mutation.mutate(formData);
+    currentPriceTableData
+      ? mutationUpdate.mutate(formData)
+      : mutation.mutate(formData);
   }
 
   const onFormSubmit = (e: React.FormEvent) => {
@@ -137,6 +183,35 @@ const Applypolicy = ({ applyPolicy, priceTableMenus }: props) => {
     form.handleSubmit(onSubmit)();
   };
 
+  // Effect to reset form values when currentPriceTableData changes
+  useEffect(() => {
+    if (currentPriceTableData) {
+      form.reset({
+        code: currentPriceTableData.code,
+        name: currentPriceTableData.name,
+        branch: currentPriceTableData.branch._id,
+        area: currentPriceTableData.area._id,
+        startDate: currentPriceTableData.startDate
+          ? new Date(currentPriceTableData.startDate)
+          : undefined,
+        endDate: currentPriceTableData.endDate
+          ? new Date(currentPriceTableData.endDate)
+          : undefined,
+        menus: currentPriceTableData.menus || [
+          {
+            menuId: "",
+            price: 0,
+            vat: 0,
+            disPercent: 0,
+            disAmount: 0,
+            adjust: false,
+          },
+        ],
+      });
+    }
+  }, [currentPriceTableData, form]);
+
+  console.log(form.getValues());
   return (
     <div
       id="policy"
@@ -144,12 +219,10 @@ const Applypolicy = ({ applyPolicy, priceTableMenus }: props) => {
         applyPolicy ? "block" : "hidden"
       }`}
     >
-      <Toaster/>
-      
-      {mutation.isError ? (
-        toast(mutation.error.message)
-      ) : null}
-      
+      <Toaster />
+
+      {mutation.isError ? toast(mutation.error.message) : null}
+
       <Form {...form}>
         <form className="w-2/3 space-y-6" method="POST">
           <div className="">
@@ -158,11 +231,12 @@ const Applypolicy = ({ applyPolicy, priceTableMenus }: props) => {
               <FormField
                 control={form.control}
                 name="code"
+                
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Price Table Code</FormLabel>
                     <FormControl>
-                      <Input placeholder="Code" {...field} />
+                      <Input placeholder="Code" {...field} disabled={currentPriceTableData&& true} />
                     </FormControl>
 
                     <FormMessage />
@@ -196,15 +270,19 @@ const Applypolicy = ({ applyPolicy, priceTableMenus }: props) => {
                     <FormLabel>Branch</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={form.watch('branch')}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a verified email to display" />
+                          <SelectValue placeholder="Select branch" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="a">a</SelectItem>
+                        {branches?.map((branch) => (
+                          <SelectItem key={branch._id} value={branch._id}>
+                            {branch.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
 
@@ -221,15 +299,19 @@ const Applypolicy = ({ applyPolicy, priceTableMenus }: props) => {
                     <FormLabel>Area</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={form.watch('area')}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a verified email to display" />
+                          <SelectValue placeholder="Select area" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="a">a</SelectItem>
+                        {csas?.map((csa) => (
+                          <SelectItem key={csa._id} value={csa._id}>
+                            {csa.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
 

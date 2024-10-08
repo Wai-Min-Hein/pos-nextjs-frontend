@@ -1,5 +1,5 @@
 import { toast } from "@/hooks/use-toast";
-import { priceTableMenuInterface } from "@/types";
+import { menuInterface } from "@/types";
 import { useGetAllFnb, useGetAllPriceTable } from "@/utils/TanStackHooks/useSystem";
 import React, { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
@@ -11,8 +11,8 @@ import { MdDeleteOutline } from "react-icons/md";
 
 interface props {
     detailInfo: boolean,
-    priceTableMenus: priceTableMenuInterface[],
-    setPriceTableMenus: React.Dispatch<React.SetStateAction<priceTableMenuInterface[]>>;
+    priceTableMenus: menuInterface[],
+    setPriceTableMenus: React.Dispatch<React.SetStateAction<menuInterface[]>>;
 }
 const ProductDetailInfo = ({detailInfo,priceTableMenus,setPriceTableMenus}:props) => {
  
@@ -23,7 +23,7 @@ const ProductDetailInfo = ({detailInfo,priceTableMenus,setPriceTableMenus}:props
   } = useGetAllFnb();
   const { data: priceTableDatas, isLoading, isError } = useGetAllPriceTable();
 
-  const [currentMenu, setCurrentMenu] = useState<priceTableMenuInterface>({
+  const [currentMenu, setCurrentMenu] = useState<menuInterface>({
     menuId: "",
     price: 0,
     vat: 0,
@@ -33,7 +33,7 @@ const ProductDetailInfo = ({detailInfo,priceTableMenus,setPriceTableMenus}:props
   });
 
   // On row save
-  const onMenuSave = (currentMenu: priceTableMenuInterface) => {
+  const onMenuSave = (currentMenu: menuInterface) => {
     // Validate price and menu selection
     if (currentMenu.price <= 0) {
       toast({
@@ -223,7 +223,7 @@ const ProductDetailInfo = ({detailInfo,priceTableMenus,setPriceTableMenus}:props
       </TableBody>
 
       <TableBody className="mt-8">
-        {priceTableMenus.map((menu) => {
+        {priceTableMenus?.map((menu) => {
           const currentMenu = fnbDatas?.find(
             (fnb) => fnb._id == menu.menuId
           );

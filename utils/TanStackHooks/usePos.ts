@@ -28,6 +28,30 @@ export const useGetAllCsa = () => {
 }
 
 
+async function getAllBranch():Promise<customerServiceAreaInterface[]> {
+    try {
+        const res = await fetch( `${baseApi}/branch`);
+        if (!res.ok) {
+            throw new Error("Network response was not ok");
+        }
+        const result =  await res.json(); // Return the fetched data
+        return result.datas
+    }catch (error) {
+        throw error
+        
+    }
+}
+
+export const useGetAllBranch = () => {
+    return useQuery({
+        queryKey: ["branch"],
+        queryFn: () => getAllBranch(),
+        staleTime: 5 * 60 * 1000,
+        
+    })
+}
+
+
 async function getAllCategory():Promise<productCategoryInterface[]> {
     try {
         const res = await fetch( `${baseApi}/productcategory`);

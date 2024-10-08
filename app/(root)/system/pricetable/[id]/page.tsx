@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { HiOutlinePrinter } from "react-icons/hi";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { details } from "@/constant/icon";
@@ -8,16 +8,29 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import Image from "next/image";
 import { CiImport } from "react-icons/ci";
-import { priceTableMenuInterface } from "@/types";
+import { menuInterface, priceTableMenuInterface } from "@/types";
 
 import { toast, useToast } from "@/hooks/use-toast";
 
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import ProductDetailInfo from "@/components/priceTable/productDetailInfo";
 import Applypolicy from "@/components/priceTable/applypolicy";
-import ActionHeader from "@/components/ActionHeader";
+import { useGetSinglePriceTable } from "@/utils/TanStackHooks/useSystem";
 
 const PriceTableDetails = () => {
+
+  const currentId = useParams().id as string
+
+ 
+
+
+  const { data: currentPriceTableData, isLoading, isError } = useGetSinglePriceTable(currentId);
+
+
+
+
+
+
   const baseApi = process.env.NEXT_PUBLIC_BASE_API;
   const router = useRouter()
 
@@ -25,8 +38,12 @@ const PriceTableDetails = () => {
   const [detailInfo, setDetailInfo] = useState(false);
 
   const [priceTableMenus, setPriceTableMenus] = useState<
-    priceTableMenuInterface[]
+  menuInterface[]
   >([]);
+
+  useEffect(() => {
+    setPriceTableMenus(prev => currentPriceTableData?.menus || prev)
+  }, [currentPriceTableData])
 
   const handleAddClick = () => router.push('/system/pricetable/new');
 
@@ -65,6 +82,7 @@ const PriceTableDetails = () => {
       <Applypolicy
         applyPolicy={applyPolicy}
         priceTableMenus={priceTableMenus}
+        currentPriceTableData={currentPriceTableData }
       />
 
       <ProductDetailInfo
