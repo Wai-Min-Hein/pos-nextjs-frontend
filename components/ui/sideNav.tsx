@@ -11,6 +11,19 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
+// Define types for menu items
+interface ListItem {
+  name: string;
+  href?: string;
+  icon: string;
+}
+
+interface Menu {
+  id: string;
+  name: string;
+  lists: ListItem[];
+}
+
 const SideNav = () => {
   const router = useRouter();
   const pathName = usePathname();
@@ -18,8 +31,8 @@ const SideNav = () => {
   // Set open item based on pathname
   const toOpenItem = menuList.filter((list) => pathName.includes(list.id));
 
-  const [openItem, setOpenItem] = useState(
-    toOpenItem.length > 0 ? toOpenItem[0].id : menuList[0]?.id
+  const [openItem, setOpenItem] = useState<string>(
+    toOpenItem.length > 0 ? toOpenItem[0].id : menuList[0]?.id || ""
   );
 
   // Re-render when pathName changes

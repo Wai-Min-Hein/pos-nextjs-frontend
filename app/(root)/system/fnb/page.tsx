@@ -18,11 +18,11 @@ import { MdDeleteOutline } from "react-icons/md";
 import ActionHeader from "@/components/ActionHeader";
 import { useGetAllFnb } from "@/utils/TanStackHooks/useSystem";
 import { useRouter } from "next/navigation";
-import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query";
+import {useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
 const FnB = () => {
-  const { data: fnbDatas, isLoading, isError } = useGetAllFnb();
+  const { data: fnbDatas, isLoading } = useGetAllFnb();
 
   const baseApi = process.env.NEXT_PUBLIC_BASE_API;
 
@@ -31,8 +31,6 @@ const FnB = () => {
     mutationFn: async (id: string) => {
       try {
         const res = await axios.delete(`${baseApi}/fnb/${id}`)
-        console.log(res);
-
       } catch (error) {
         console.log(error);
         

@@ -1,7 +1,8 @@
 import { customerServiceAreaInterface, priceTableInterface, productCategoryInterface, productInterface } from "@/types";
 import { useQuery } from "@tanstack/react-query"
 
-const baseApi = process.env.NEXT_PUBLIC_BASE_API
+// const baseApi = process.env.NEXT_PUBLIC_BASE_API
+const baseApi = 'https://expresspos.vercel.app/api'
 
 
 async function getAllCsa():Promise<customerServiceAreaInterface[]> {

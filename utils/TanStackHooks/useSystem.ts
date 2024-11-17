@@ -4,10 +4,11 @@ import {
   priceTableInterface,
   priceTableMenuInterface,
 } from "@/types";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
-const baseApi = process.env.NEXT_PUBLIC_BASE_API;
+// const baseApi = process.env.NEXT_PUBLIC_BASE_API;
+const baseApi = 'https://expresspos.vercel.app/api'
+
 
 async function getAllFnb(): Promise<fnbInterface[]> {
   try {
