@@ -18,8 +18,6 @@ import {
 import { useGetAllCategory } from "@/utils/TanStackHooks/usePos";
 import { fnbInterface, priceTableMenuInterface } from "@/types";
 
-import PosLeftSide from "@/components/PosLeftSide";
-import PosRightSide from "@/components/PosRightSide";
 import { useParams, usePathname } from "next/navigation";
 import { useGetPriceTableByAreaName } from "@/utils/TanStackHooks/usePos";
 
