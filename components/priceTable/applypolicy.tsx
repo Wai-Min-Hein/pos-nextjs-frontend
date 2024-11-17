@@ -148,6 +148,7 @@ const Applypolicy = ({
     },
   });
 
+
   const form = useForm<z.infer<typeof priceTableSchema>>({
     resolver: zodResolver(priceTableSchema),
     defaultValues: {
@@ -157,7 +158,14 @@ const Applypolicy = ({
       area: currentPriceTableData?.area._id || '',
       startDate: currentPriceTableData?.startDate ? new Date(currentPriceTableData?.startDate) : new Date(),
       endDate: currentPriceTableData?.endDate ? new Date(currentPriceTableData?.endDate) : new Date(),
-      menus: currentPriceTableData?.menus || [{ menu: "", price: 0, vat: 0, disPercent: 0, disAmount: 0, adjust: false }],
+      menus: currentPriceTableData?.menus?.map((menuItem) => ({
+        menu: typeof menuItem.menu === "object" && menuItem.menu?._id ? menuItem.menu?._id : "",
+        price: menuItem.price || 0,
+        vat: menuItem.vat || 0,
+        disPercent: menuItem.disPercent || 0,
+        disAmount: menuItem.disAmount || 0,
+        adjust: menuItem.adjust || false,
+      })) || [{ menu: "", price: 0, vat: 0, disPercent: 0, disAmount: 0, adjust: false }],
     },
   });
 

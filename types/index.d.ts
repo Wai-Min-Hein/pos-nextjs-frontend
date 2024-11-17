@@ -50,6 +50,17 @@ declare type fnbInterface = {
   unit: string;
 }
 
+declare type fnbFormInterface = {
+  _id?: string;
+  name: string;
+  category: string;
+  sku: string;
+  createdByName?: string;
+  createdByImage?: string;
+  description?: string;
+  unit: string;
+}
+
 declare interface branchAreaInterface   extends customerServiceAreaInterface  {
   
     phone: string;
@@ -88,7 +99,7 @@ declare type menuInterface = {
 }
 
 declare type priceTableMenuInterface = {
-  menu : fnbInterface;
+  menu : fnbInterface | string;
   price: number;
   vat: number;
   disPercent: number;
@@ -98,7 +109,6 @@ declare type priceTableMenuInterface = {
 
 declare type priceTableInterface = {
   _id: string;
-
     code: string;
     name: string;
     branch: branchAreaInterface;
@@ -107,4 +117,25 @@ declare type priceTableInterface = {
     endDate: Date | null;
     menus: priceTableMenuInterface[];
   }
+
+
+  declare type priceTableMenuFormInterface = {
+    menu : string;
+    price: number;
+    vat: number;
+    disPercent: number;
+    disAmount: number;
+    adjust: boolean
+  }
+  
+  declare type priceTableFormInterface = {
+    _id?: string;
+      code: string;
+      name: string;
+      branch: string;
+      area: string;
+      startDate: Date | null;
+      endDate: Date | null;
+      menus: priceTableMenuFormInterface[];
+    }
 

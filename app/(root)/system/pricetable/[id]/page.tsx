@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import Image from "next/image";
 import { CiImport } from "react-icons/ci";
-import { menuInterface, priceTableMenuInterface } from "@/types";
+import { menuInterface, priceTableMenuFormInterface, priceTableMenuInterface } from "@/types";
 
 import { toast, useToast } from "@/hooks/use-toast";
 
@@ -33,11 +33,20 @@ const { data: currentPriceTableData, isLoading, isError } = useGetSinglePriceTab
   const [detailInfo, setDetailInfo] = useState(false);
 
   const [priceTableMenus, setPriceTableMenus] = useState<
-  menuInterface[]
+  priceTableMenuFormInterface[]
   >([]);
 
+  console.log(currentPriceTableData);
+
   useEffect(() => {
-    setPriceTableMenus(prev => currentPriceTableData?.menus || prev)
+    setPriceTableMenus(prev => currentPriceTableData?.menus?.map((menuItem) => ({
+      menu: typeof menuItem.menu === "string" && menuItem.menu ? menuItem.menu : "",
+      price: menuItem.price || 0,
+      vat: menuItem.vat || 0,
+      disPercent: menuItem.disPercent || 0,
+      disAmount: menuItem.disAmount || 0,
+      adjust: menuItem.adjust || false,
+    })) || prev)
   }, [currentPriceTableData])
 
   const handleAddClick = () => router.push('/system/pricetable/new');

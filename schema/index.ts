@@ -1,5 +1,17 @@
 import { z } from "zod";
 
+
+export const fnbSchema = z.object({
+  name: z.string().min(1, { message: "Name must be included." }),
+  image: z.string().optional(),
+  description: z.string().optional(),
+  createdByImage: z.string().optional(),
+  createdByName: z.string().optional(),
+  category: z.string().min(1, { message: "Category must be chosen" }),
+  sku: z.string().min(1, { message: "Shu must be included" }),
+  unit: z.string().min(1, { message: "Unit must be included" }),
+});
+
 export const priceTableSchema = z.object({
   code: z.string().min(1, {
     message: "Table code must be include.",
@@ -25,6 +37,7 @@ export const priceTableSchema = z.object({
     .array(
       z.object({
         menu: z.string(),
+        // menu: z.union([z.string(), fnbSchema]), // Accepts string or fnbInterface
         price: z.number(),
         vat: z.number(),
         disPercent: z.number(),
@@ -32,19 +45,9 @@ export const priceTableSchema = z.object({
         adjust: z.boolean(),
       })
     )
-    .optional(),
+    
 });
 
-export const fnbSchema = z.object({
-  name: z.string().min(1, { message: "Name must be included." }),
-  image: z.string().optional(),
-  description: z.string().optional(),
-  // createdByImage: z.string().optional(),
-  // createdByName: z.string().optional(),
-  category: z.string().min(1, { message: "Category must be chosen" }),
-  sku: z.string().min(1, { message: "Shu must be included" }),
-  unit: z.string().min(1, { message: "Unit must be included" }),
-});
 
 export const menuCategorySchema = z.object({
   name: z.string().min(1, { message: "Name must be included." }),

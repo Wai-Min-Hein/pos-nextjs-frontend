@@ -35,7 +35,7 @@ import { fnb } from "@/constant/image";
 import { useGetAllMenuCategory } from "@/utils/TanStackHooks/useSystem";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { fnbInterface, menuCategoryInterface } from "@/types";
+import { fnbFormInterface, menuCategoryInterface } from "@/types";
 import { useRouter } from "next/navigation";
 
 const FnbDetail = () => {
@@ -47,7 +47,7 @@ const FnbDetail = () => {
   const [menuImage, setMenuImage] = useState<string | null>(null);
 
   const mutation = useMutation({
-    mutationFn: async (data: fnbInterface) => {
+    mutationFn: async (data: fnbFormInterface) => {
       try {
         const res = await axios.post(`${baseApi}/fnb`, data)
         router.push("/system/fnb")

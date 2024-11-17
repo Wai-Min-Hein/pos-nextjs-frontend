@@ -1,5 +1,5 @@
 import { toast } from "@/hooks/use-toast";
-import { menuInterface } from "@/types";
+import { priceTableMenuFormInterface } from "@/types";
 import { useGetAllFnb, useGetAllPriceTable } from "@/utils/TanStackHooks/useSystem";
 import React, { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
@@ -11,8 +11,8 @@ import { MdDeleteOutline } from "react-icons/md";
 
 interface props {
     detailInfo: boolean,
-    priceTableMenus: menuInterface[],
-    setPriceTableMenus: React.Dispatch<React.SetStateAction<menuInterface[]>>;
+    priceTableMenus: priceTableMenuFormInterface[],
+    setPriceTableMenus: React.Dispatch<React.SetStateAction<priceTableMenuFormInterface[]>>;
 }
 const ProductDetailInfo = ({detailInfo,priceTableMenus,setPriceTableMenus}:props) => {
  
@@ -25,7 +25,7 @@ const ProductDetailInfo = ({detailInfo,priceTableMenus,setPriceTableMenus}:props
   
   const { data: priceTableDatas, isLoading, isError } = useGetAllPriceTable();
 
-  const [currentMenu, setCurrentMenu] = useState<menuInterface>({
+  const [currentMenu, setCurrentMenu] = useState<priceTableMenuFormInterface>({
     menu: "",
     price: 0,
     vat: 0,
@@ -35,7 +35,7 @@ const ProductDetailInfo = ({detailInfo,priceTableMenus,setPriceTableMenus}:props
   });
 
   // On row save
-  const onMenuSave = (currentMenu: menuInterface) => {
+  const onMenuSave = (currentMenu: priceTableMenuFormInterface) => {
     // Validate price and menu selection
     if (currentMenu.price <= 0) {
       toast({
@@ -85,7 +85,7 @@ const ProductDetailInfo = ({detailInfo,priceTableMenus,setPriceTableMenus}:props
     });
   };
 
-  const onMenuDelete = (currentMenu: menuInterface) => {
+  const onMenuDelete = (currentMenu: priceTableMenuFormInterface) => {
     setCurrentMenu({
       menu: "",
       price: 0,
@@ -230,6 +230,7 @@ const ProductDetailInfo = ({detailInfo,priceTableMenus,setPriceTableMenus}:props
 
       <TableBody className="mt-8">
         {priceTableMenus?.map((menu) => {
+          console.log(menu);
           const currentMenu = fnbDatas?.find(
             (fnb) => fnb._id == menu.menu
           );
