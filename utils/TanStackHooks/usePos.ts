@@ -1,4 +1,4 @@
-import { customerServiceAreaInterface, productCategoryInterface, productInterface } from "@/types";
+import { customerServiceAreaInterface, priceTableInterface, productCategoryInterface, productInterface } from "@/types";
 import { useQuery } from "@tanstack/react-query"
 
 const baseApi = process.env.NEXT_PUBLIC_BASE_API
@@ -126,3 +126,29 @@ export const useGetProductsByCategory = (categoryId:string) => {
     })
 }
 
+
+
+async function getPriceTableByAreaName(areaName: string):Promise<priceTableInterface> {
+    const url = `${baseApi}/pricetable/area/${areaName}`;
+    try {
+        const res = await fetch( url);
+
+        if (!res.ok) {
+            throw new Error("Network response was not ok");
+        }
+        const result =  await res.json(); // Return the fetched data
+        return result.datas 
+    }catch (error) {
+        throw error
+        
+    }
+}
+
+export const useGetPriceTableByAreaName = (areaName:string) => {
+    return useQuery({
+        queryKey: ["singlepricetable",areaName],
+        queryFn: () => getPriceTableByAreaName(areaName),
+        staleTime: 5 * 60 * 1000,
+        
+    })
+}

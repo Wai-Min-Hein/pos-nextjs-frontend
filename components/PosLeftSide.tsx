@@ -6,7 +6,7 @@ import {
 } from "react-icons/md";
 
 import PosCategoryCardComponent from "@/components/PosCategoryCardComponent";
-import PosProductCardComponent from "@/components/PosProductCardComponent";
+import PosMenuCardComponent from "@/components/PosMenuCardComponent";
 import {
   Carousel,
   CarouselApi,
@@ -14,25 +14,18 @@ import {
   CarouselItem,
 } from "./ui/carousel";
 import {
-  useGetAllCategory,
-  useGetAllProducts,
-  useGetProductsByCategory,
+  useGetAllCategory
 } from "@/utils/TanStackHooks/usePos";
+import { priceTableMenuInterface } from "@/types";
 
-const PosLeftSide = () => {
+interface props{
+  menus : priceTableMenuInterface[] | undefined
+}
+const PosLeftSide:React.FC<props> = ({menus}) => {
   const [currentCategory, setCurrentCategory] = useState<string>("All");
+  const { data: allCategories, isLoading: isCategoryLoading } = useGetAllCategory();
 
-  const { data: categories, isLoading: isCategoryLoading } =
-    useGetAllCategory();
-  // Fetch products based on the currentCategory
-  const { data: products, isLoading: isProductLoading } =useGetProductsByCategory( currentCategory );
-  
-
-  const allProductCount = categories?.reduce(
-    (pv, cv) => cv?.productCount + pv,
-    0
-  );
-
+ 
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
@@ -95,26 +88,31 @@ const PosLeftSide = () => {
                 <PosCategoryCardComponent
                   code={"All"}
                   name={"All"}
-                  count={allProductCount ? allProductCount : 0}
+                  count={menus ? menus.length : 0}
                   isActive = {currentCategory == 'All'}
                 />
               </CarouselItem>
-              {categories?.map((category) => (
-                <CarouselItem
-                  onClick={() => setCurrentCategory(category._id)}
-                  key={category?._id}
-                  className="basis-1/5 w-full"
-                >
-                  {category?.status && (
-                    <PosCategoryCardComponent
-                      code={category?.code}
-                      name={category?.name}
-                      count={category?.productCount}
-                      isActive = {currentCategory == category._id}
-                    />
-                  )}
-                </CarouselItem>
-              ))}
+              {allCategories?.map((category) => {
+                
+                  return (
+                    <CarouselItem
+                      onClick={() => setCurrentCategory(category._id)}
+                      key={category?._id}
+                      className="basis-1/5 w-full"
+                    >
+                      {category?.status && (
+                        <PosCategoryCardComponent
+                          code={category?.code}
+                          name={category?.name}
+                          count={allCategories.length}
+                          isActive = {currentCategory == category._id}
+                        />
+                      )}
+                    </CarouselItem>
+                  )
+              }
+              
+              )}
             </CarouselContent>
           </Carousel>
         </div>
@@ -124,13 +122,10 @@ const PosLeftSide = () => {
         <h1 className="mb-6">Menus</h1>
 
         <div className="flex items-center justify-start gap-8 flex-wrap">
-          {products?.map((product) => (
-            <PosProductCardComponent
-              key={product?._id}
-              sku={product?.sku}
-              name={product?.name}
-              unit={product?.unit}
-              category={product?.category.name}
+          {menus?.map((menu) => (
+            <PosMenuCardComponent
+              key={menu?.menu?._id}
+              menu={menu }
             />
           ))}
         </div>

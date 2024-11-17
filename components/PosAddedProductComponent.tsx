@@ -4,8 +4,13 @@ import React from "react";
 import { FiEdit, FiMinusCircle, FiPlusCircle } from "react-icons/fi";
 import { Button } from "./ui/button";
 import { MdDeleteSweep } from "react-icons/md";
+import { priceTableMenuInterface } from "@/types";
 
-const PosAddedProductComponent = () => {
+interface props {
+  menu: priceTableMenuInterface
+}
+
+const PosAddedProductComponent: React.FC<props> = ({menu}) => {
   return (
     <div className="flex items-center justify-between gap-6 my-4 select-none">
       <div className="flex items-center justify-start gap-6">
@@ -17,15 +22,15 @@ const PosAddedProductComponent = () => {
         
 
         <div className="flex flex-col">
-          <span>001</span>
-          <strong>Mac Book</strong>
-          <span>$ 2000</span>
+          <span>{menu?.menu.sku}</span>
+          <strong>{menu?.menu.name}</strong>
+          <span>{menu?.price} Ks</span>
         </div>
       </div>
 
       <div className="flex items-center justify-start gap-3">
         <FiMinusCircle className="cursor-pointer"/>
-        <span className="">4</span>
+        <span className="">1</span>
         <FiPlusCircle className="cursor-pointer" />
       </div>
       <Button variant={"outline"}>

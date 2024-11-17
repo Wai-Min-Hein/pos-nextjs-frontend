@@ -21,10 +21,12 @@ const ProductDetailInfo = ({detailInfo,priceTableMenus,setPriceTableMenus}:props
     isLoading: isFnbLoading,
     isError: isFnbError,
   } = useGetAllFnb();
+
+  
   const { data: priceTableDatas, isLoading, isError } = useGetAllPriceTable();
 
   const [currentMenu, setCurrentMenu] = useState<menuInterface>({
-    menuId: "",
+    menu: "",
     price: 0,
     vat: 0,
     disPercent: 0,
@@ -42,7 +44,7 @@ const ProductDetailInfo = ({detailInfo,priceTableMenus,setPriceTableMenus}:props
       return; // Exit early if validation fails
     }
 
-    if (!currentMenu.menuId) {
+    if (!currentMenu.menu) {
       toast({
         description: "Menu must be chosen",
       });
@@ -51,7 +53,7 @@ const ProductDetailInfo = ({detailInfo,priceTableMenus,setPriceTableMenus}:props
 
     // Check if the menu already exists
     const menuIndex = priceTableMenus.findIndex(
-      (menu) => menu.menuId === currentMenu.menuId
+      (menu) => menu.menu === currentMenu.menu
     );
 
     if (menuIndex !== -1) {
@@ -69,12 +71,12 @@ const ProductDetailInfo = ({detailInfo,priceTableMenus,setPriceTableMenus}:props
       });
     } else {
       // Add the new menu to the list
-      setPriceTableMenus((prevMenus) => [...prevMenus, currentMenu]);
+      setPriceTableMenus((prevMenus) => [currentMenu,...prevMenus]);
     }
 
     // Reset the current menu
     setCurrentMenu({
-      menuId: "",
+      menu: "",
       price: 0,
       vat: 0,
       disPercent: 0,
@@ -83,15 +85,19 @@ const ProductDetailInfo = ({detailInfo,priceTableMenus,setPriceTableMenus}:props
     });
   };
 
-  const onMenuDelete = () => {
+  const onMenuDelete = (currentMenu: menuInterface) => {
     setCurrentMenu({
-      menuId: "",
+      menu: "",
       price: 0,
       vat: 0,
       disPercent: 0,
       disAmount: 0,
       adjust: false,
     });
+
+    const filterUndeletedMenus = priceTableMenus.filter(tableMenu => tableMenu.menu != currentMenu.menu)
+
+    setPriceTableMenus(filterUndeletedMenus);
   };
   return <div
   id="detailInfo"
@@ -116,9 +122,9 @@ const ProductDetailInfo = ({detailInfo,priceTableMenus,setPriceTableMenus}:props
         <TableRow>
           <TableCell className="font-medium p-0">
             <Select
-              value={currentMenu.menuId || ""}
+              value={currentMenu.menu || ""}
               onValueChange={(e) =>
-                setCurrentMenu({ ...currentMenu, menuId: e })
+                setCurrentMenu({ ...currentMenu, menu: e })
               }
             >
               <SelectTrigger className="bg-transparent  rounded-none">
@@ -130,7 +136,7 @@ const ProductDetailInfo = ({detailInfo,priceTableMenus,setPriceTableMenus}:props
                   {fnbDatas?.map((fnb) => (
                     <SelectItem
                       key={fnb?._id}
-                      value={fnb?._id}
+                      value={fnb?._id || ''}
                     >{`${fnb?.sku} - ${fnb?.name}`}</SelectItem>
                   ))}
                 </SelectGroup>
@@ -212,7 +218,7 @@ const ProductDetailInfo = ({detailInfo,priceTableMenus,setPriceTableMenus}:props
               </div>
 
               <div
-                onClick={onMenuDelete}
+                onClick={() => onMenuDelete(currentMenu)}
                 className="w-8 h-8 grid place-items-center rounded border-2 border-gray cursor-pointer"
               >
                 <MdDeleteOutline size={20} />
@@ -225,10 +231,10 @@ const ProductDetailInfo = ({detailInfo,priceTableMenus,setPriceTableMenus}:props
       <TableBody className="mt-8">
         {priceTableMenus?.map((menu) => {
           const currentMenu = fnbDatas?.find(
-            (fnb) => fnb._id == menu.menuId
+            (fnb) => fnb._id == menu.menu
           );
           return (
-            <TableRow key={menu.menuId}>
+            <TableRow key={menu.menu}>
               <TableCell
                 onClick={() => setCurrentMenu(menu)}
                 className="font-medium px-3 py-2 cursor-pointer"

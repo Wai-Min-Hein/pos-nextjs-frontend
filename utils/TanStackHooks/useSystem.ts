@@ -1,4 +1,9 @@
-import { fnbInterface, priceTableInterface, priceTableMenuInterface } from "@/types";
+import {
+  menuCategoryInterface,
+  fnbInterface,
+  priceTableInterface,
+  priceTableMenuInterface,
+} from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
@@ -21,7 +26,22 @@ export const useGetAllFnb = () => {
   });
 };
 
+async function getAllMenuCategory(): Promise<menuCategoryInterface[]>{
+  try {
+    const res = await fetch(`${baseApi}/menucategory`)
+    const result = await res.json()
+    return result.datas
+  } catch (error) {
+    throw error
+  }
+}
 
+export const useGetAllMenuCategory = () => {
+  return useQuery({
+    queryKey: ["menuCategory"],
+    queryFn: () => getAllMenuCategory()
+  })
+}
 
 async function getAllPriceTable(): Promise<priceTableInterface[]> {
   try {
@@ -34,30 +54,49 @@ async function getAllPriceTable(): Promise<priceTableInterface[]> {
 }
 
 export const useGetAllPriceTable = () => {
-  
   return useQuery({
     queryKey: ["pricetable"],
     queryFn: () => getAllPriceTable(),
   });
 };
 
-async function getSinglePriceTable(id:string): Promise<priceTableInterface> {
+async function getSinglePriceTable(id: string): Promise<priceTableInterface> {
   try {
-    const res = await fetch(`${baseApi}/pricetable/${id}`);
-    const result = await res.json();
-    return result.datas;
+    if (id != "new") {
+      const res = await fetch(`${baseApi}/pricetable/${id}`);
+      const result = await res.json();
+      return result.datas;
+    } else {
+      const data = {
+        _id: "",
+        code: "",
+        name: "",
+        branch: {
+          _id: "",
+          code: "",
+          name: "",
+          phone: "",
+          address: "",
+        },
+        area: {
+          _id: "",
+          code: "",
+          name: "",
+        },
+        startDate: null,
+        endDate: null,
+        menus: [],
+      };
+      return data;
+    }
   } catch (error) {
     throw error;
   }
 }
 
-export const useGetSinglePriceTable = (id:string) => {
+export const useGetSinglePriceTable = (id: string) => {
   return useQuery({
     queryKey: ["singlepricetable", id],
     queryFn: () => getSinglePriceTable(id),
   });
 };
-
-
-
-

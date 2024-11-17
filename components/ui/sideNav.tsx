@@ -9,22 +9,25 @@ import {
 import { menuList } from "@/constant/sideNav";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const SideNav = () => {
   const router = useRouter();
   const pathName = usePathname();
 
-  // Filter the menu list to find the item whose 'id' matches the current pathname
+  // Set open item based on pathname
   const toOpenItem = menuList.filter((list) => pathName.includes(list.id));
 
-  // Set the default open item based on the current route.
-  // If the route matches a menu item's 'id', open that item by default.
-  // Otherwise, open the first item in the menu list.
   const [openItem, setOpenItem] = useState(
     toOpenItem.length > 0 ? toOpenItem[0].id : menuList[0]?.id
   );
 
+  // Re-render when pathName changes
+  useEffect(() => {
+    if (toOpenItem.length > 0) {
+      setOpenItem(toOpenItem[0].id);
+    }
+  }, [pathName]);
 
   return (
     <nav className="basis-1/5 flex items-between justify-start flex-col max-h-[90vh] overflow-y-auto overflow-x-hidden sideNav-scrollbar ">
@@ -34,17 +37,14 @@ const SideNav = () => {
         value={openItem}
         onValueChange={setOpenItem}
       >
-        {menuList.map((menuList) => (
-          <AccordionItem key={menuList.id} value={menuList.id}>
-            <AccordionTrigger>{menuList.name}</AccordionTrigger>
+        {menuList.map((menu) => (
+          <AccordionItem key={menu.id} value={menu.id}>
+            <AccordionTrigger>{menu.name}</AccordionTrigger>
 
-            {menuList.lists.map((list) => (
-              <AccordionContent
-                onClick={() => router.push(list.href ? list.href : "/")}
-                className=""
-                key={list.name}
-              >
+            {menu.lists.map((list) => (
+              <AccordionContent key={list.name}>
                 <div
+                  onClick={() => router.push(list.href || "/")}
                   className={`flex items-center justify-start gap-2 cursor-pointer py-3 ${
                     list.href && pathName.includes(list.href)
                       ? "bg-transparentBgGreen"
@@ -55,12 +55,12 @@ const SideNav = () => {
                     <Image
                       src={list.icon}
                       fill
-                      sizes="24px" // Adjust based on your actual image container size
+                      sizes="24px" 
                       style={{ objectFit: "cover" }}
                       alt="Icon"
                     />
                   </div>
-                  <h4 className="font-roboto">{list.name}</h4>
+                  <h4 className="font-roboto select-none">{list.name}</h4>
                 </div>
               </AccordionContent>
             ))}

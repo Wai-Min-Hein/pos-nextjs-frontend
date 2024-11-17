@@ -24,14 +24,9 @@ const PriceTableDetails = () => {
  
 
 
-  const { data: currentPriceTableData, isLoading, isError } = useGetSinglePriceTable(currentId);
 
+const { data: currentPriceTableData, isLoading, isError } = useGetSinglePriceTable(currentId);
 
-
-
-
-
-  const baseApi = process.env.NEXT_PUBLIC_BASE_API;
   const router = useRouter()
 
   const [applyPolicy, setApplyPolicy] = useState(true);
@@ -47,13 +42,21 @@ const PriceTableDetails = () => {
 
   const handleAddClick = () => router.push('/system/pricetable/new');
 
+  
+
+  if(!currentPriceTableData){
+    return(
+      <div className="">
+        <h1>Loading.........</h1>
+      </div>
+    )
+  }
+
+
   return (
+    
     <div className="w-full px-8">
-      {/* <ActionHeader
-        title={"Details Informations"}
-        description={"Create new product table"}
-        handleAddClick={handleAddClick}
-      /> */}
+      
 
       <div id="header" className="bg-gray mt-8 rounded-md py-2 px-6">
         <div className=" flex items-center gap-4 justify-start">
@@ -76,7 +79,11 @@ const PriceTableDetails = () => {
           >
             Products Details Information
           </Button>
+          
+          
         </div>
+
+        
       </div>
 
       <Applypolicy

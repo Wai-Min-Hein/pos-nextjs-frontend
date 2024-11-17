@@ -98,7 +98,7 @@ const Applypolicy = ({
       startDate: Date | undefined;
       endDate: Date | undefined;
       menus?: {
-        menuId: string;
+        menu: string;
         price: number;
         vat: number;
         disPercent: number;
@@ -126,7 +126,7 @@ const Applypolicy = ({
       startDate: Date | undefined;
       endDate: Date | undefined;
       menus?: {
-        menuId: string;
+        menu: string;
         price: number;
         vat: number;
         disPercent: number;
@@ -151,22 +151,13 @@ const Applypolicy = ({
   const form = useForm<z.infer<typeof priceTableSchema>>({
     resolver: zodResolver(priceTableSchema),
     defaultValues: {
-      code: "",
-      name: "",
-      branch: "",
-      area: "",
-      startDate: undefined,
-      endDate: undefined,
-      menus: [
-        {
-          menuId: "",
-          price: 0,
-          vat: 0,
-          disPercent: 0,
-          disAmount: 0,
-          adjust: false,
-        },
-      ],
+      code: currentPriceTableData?.code || "",
+      name:  currentPriceTableData?.name || "",
+      branch:currentPriceTableData?.branch._id || '',
+      area: currentPriceTableData?.area._id || '',
+      startDate: currentPriceTableData?.startDate ? new Date(currentPriceTableData?.startDate) : new Date(),
+      endDate: currentPriceTableData?.endDate ? new Date(currentPriceTableData?.endDate) : new Date(),
+      menus: currentPriceTableData?.menus || [{ menu: "", price: 0, vat: 0, disPercent: 0, disAmount: 0, adjust: false }],
     },
   });
 
@@ -183,35 +174,6 @@ const Applypolicy = ({
     form.handleSubmit(onSubmit)();
   };
 
-  // Effect to reset form values when currentPriceTableData changes
-  useEffect(() => {
-    if (currentPriceTableData) {
-      form.reset({
-        code: currentPriceTableData.code,
-        name: currentPriceTableData.name,
-        branch: currentPriceTableData.branch._id,
-        area: currentPriceTableData.area._id,
-        startDate: currentPriceTableData.startDate
-          ? new Date(currentPriceTableData.startDate)
-          : undefined,
-        endDate: currentPriceTableData.endDate
-          ? new Date(currentPriceTableData.endDate)
-          : undefined,
-        menus: currentPriceTableData.menus || [
-          {
-            menuId: "",
-            price: 0,
-            vat: 0,
-            disPercent: 0,
-            disAmount: 0,
-            adjust: false,
-          },
-        ],
-      });
-    }
-  }, [currentPriceTableData, form]);
-
-  console.log(form.getValues());
   return (
     <div
       id="policy"
@@ -236,7 +198,7 @@ const Applypolicy = ({
                   <FormItem>
                     <FormLabel>Price Table Code</FormLabel>
                     <FormControl>
-                      <Input placeholder="Code" {...field} disabled={currentPriceTableData&& true} />
+                      <Input placeholder="Code" {...field} disabled={currentPriceTableData?._id != '' && true} />
                     </FormControl>
 
                     <FormMessage />
@@ -277,9 +239,9 @@ const Applypolicy = ({
                           <SelectValue placeholder="Select branch" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent >
                         {branches?.map((branch) => (
-                          <SelectItem key={branch._id} value={branch._id}>
+                          <SelectItem key={branch._id} value={branch._id || ''}>
                             {branch.name}
                           </SelectItem>
                         ))}
@@ -300,6 +262,7 @@ const Applypolicy = ({
                     <Select
                       onValueChange={field.onChange}
                       value={form.watch('area')}
+
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -308,7 +271,7 @@ const Applypolicy = ({
                       </FormControl>
                       <SelectContent>
                         {csas?.map((csa) => (
-                          <SelectItem key={csa._id} value={csa._id}>
+                          <SelectItem key={csa._id} value={csa._id|| ''}>
                             {csa.name}
                           </SelectItem>
                         ))}
@@ -372,6 +335,7 @@ const Applypolicy = ({
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
+                          disabled={!form.getValues("startDate")}
                             variant={"outline"}
                             className={cn(
                               "w-[240px] pl-3 text-left font-normal",

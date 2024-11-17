@@ -139,9 +139,6 @@ const PosRightSide = () => {
           </div>
       </div>
 
-      
-
-
     </div>
   );
 };
