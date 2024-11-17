@@ -99,7 +99,7 @@ declare type menuInterface = {
 }
 
 declare type priceTableMenuInterface = {
-  menu : fnbInterface | string;
+  menu : fnbInterface ;
   price: number;
   vat: number;
   disPercent: number;
