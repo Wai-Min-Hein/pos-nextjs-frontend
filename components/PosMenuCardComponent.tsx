@@ -1,12 +1,12 @@
 import {  jacket } from "@/constant/image";
-import { priceTableMenuInterface } from "@/types";
+import { posMenuInterface } from "@/types";
 import Image from "next/image";
 import React from "react";
 
 
 interface props{
-  menu: priceTableMenuInterface,
-  handleOrderedMenuClick?: (menu:priceTableMenuInterface) => void
+  menu: posMenuInterface,
+  handleOrderedMenuClick?: (menu:posMenuInterface) => void
 }
 
 const PosMenuCardComponent: React.FC<props> = ({menu,handleOrderedMenuClick}) => {

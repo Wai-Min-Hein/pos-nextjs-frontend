@@ -4,13 +4,61 @@ import React from "react";
 import { FiEdit, FiMinusCircle, FiPlusCircle } from "react-icons/fi";
 import { Button } from "./ui/button";
 import { MdDeleteSweep } from "react-icons/md";
-import { priceTableMenuInterface } from "@/types";
+import { posMenuInterface } from "@/types";
 
 interface props {
-  menu: priceTableMenuInterface
+  menu: posMenuInterface,
+  orderedMenus: posMenuInterface[],
+  setOrderedMenus: React.Dispatch<React.SetStateAction<posMenuInterface[]>>;
 }
 
-const PosAddedProductComponent: React.FC<props> = ({menu}) => {
+const PosAddedProductComponent: React.FC<props> = ({menu,orderedMenus,setOrderedMenus}) => {
+
+  const handleDelete= () => {
+  const notDeletedMenu = orderedMenus.filter(orderedMenu => orderedMenu.menu._id != menu.menu._id)
+    setOrderedMenus(notDeletedMenu)
+  }
+  const handlePlusQty = (menu: posMenuInterface) => {
+    // Find the current menu item in orderedMenus
+    const currentMenuIndex = orderedMenus.findIndex(orderedMenu => orderedMenu.menu._id === menu.menu._id);
+
+    if (currentMenuIndex !== -1) {
+        // Create a new array with updated quantity
+        const updatedMenus = [...orderedMenus];
+        updatedMenus[currentMenuIndex] = {
+            ...updatedMenus[currentMenuIndex],
+            qty: updatedMenus[currentMenuIndex].qty + 1, // Increase quantity by 1
+            totalMenuAmt: (updatedMenus[currentMenuIndex].qty + 1) * updatedMenus[currentMenuIndex].price, // Update total amount
+            totalMenuDiscountedAmt: updatedMenus[currentMenuIndex].menuDiscountedAmt&& (updatedMenus[currentMenuIndex].qty + 1) * updatedMenus[currentMenuIndex].menuDiscountedAmt
+        };
+
+        console.log(updatedMenus);
+        // Update state with new array
+        setOrderedMenus(updatedMenus);
+    }
+  };
+
+
+  const handleMinusQty = (menu: posMenuInterface) => {
+    // Find the current menu item in orderedMenus
+    const currentMenuIndex = orderedMenus.findIndex(orderedMenu => orderedMenu.menu._id === menu.menu._id);
+
+    if (currentMenuIndex !== -1 && menu.qty>1) {
+        // Create a new array with updated quantity
+        const updatedMenus = [...orderedMenus];
+        updatedMenus[currentMenuIndex] = {
+            ...updatedMenus[currentMenuIndex],
+            qty: updatedMenus[currentMenuIndex].qty - 1, // Increase quantity by 1
+            totalMenuAmt: (updatedMenus[currentMenuIndex].qty - 1) * updatedMenus[currentMenuIndex].price, // Update total amount
+            totalMenuDiscountedAmt: updatedMenus[currentMenuIndex].menuDiscountedAmt&& (updatedMenus[currentMenuIndex].qty - 1) * updatedMenus[currentMenuIndex].menuDiscountedAmt
+
+        };
+
+        // Update state with new array
+        setOrderedMenus(updatedMenus);
+    }
+  };
+
   return (
     <div className="flex items-center justify-between gap-6 my-4 select-none">
       <div className="flex items-center justify-start gap-6">
@@ -29,15 +77,21 @@ const PosAddedProductComponent: React.FC<props> = ({menu}) => {
       </div>
 
       <div className="flex items-center justify-start gap-3">
-        <FiMinusCircle className="cursor-pointer"/>
-        <span className="">1</span>
-        <FiPlusCircle className="cursor-pointer" />
+        <FiMinusCircle onClick={() => handleMinusQty(menu)} className="cursor-pointer"/>
+        <span className="">{menu.qty}</span>
+        <FiPlusCircle onClick={() => handlePlusQty(menu)} className="cursor-pointer" />
       </div>
-      <Button variant={"outline"}>
-        <FiEdit />
-      </Button>
 
-      <Button variant={"outline"}>
+      <span className="">{menu.totalMenuAmt - (menu.totalMenuDiscountedAmt ? menu.totalMenuDiscountedAmt:0)} Ks
+        {menu.menuDiscountedAmt && <span>(-{menu.disPercent}%)</span> }
+        
+      </span>
+
+      {/* <Button variant={"outline"}>
+        <FiEdit />
+      </Button> */}
+
+      <Button onClick={handleDelete} variant={"outline"}>
         <MdDeleteSweep />
       </Button>
     </div>

@@ -139,3 +139,11 @@ declare type priceTableInterface = {
       menus: priceTableMenuFormInterface[];
     }
 
+
+
+  declare interface posMenuInterface extends priceTableMenuInterface{
+      qty: number,
+      totalMenuAmt: number,
+      menuDiscountedAmt?: number,
+      totalMenuDiscountedAmt?: number
+    }

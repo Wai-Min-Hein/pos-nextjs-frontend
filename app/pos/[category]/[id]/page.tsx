@@ -16,7 +16,7 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { useGetAllCategory } from "@/utils/TanStackHooks/usePos";
-import { fnbInterface, priceTableMenuInterface } from "@/types";
+import { fnbInterface, posMenuInterface, priceTableMenuInterface } from "@/types";
 
 import { useParams, usePathname } from "next/navigation";
 import { useGetPriceTableByAreaName } from "@/utils/TanStackHooks/usePos";
@@ -61,15 +61,18 @@ const ChooseProduct = () => {
     });
   }, [api]);
 
-  const [orderedMenus, setOrderedMenus] = useState<priceTableMenuInterface[]>([])
-  const handleOrderedMenuClick = (menu:priceTableMenuInterface ) => {
-    const isExisted = orderedMenus.includes(menu)
+  const [orderedMenus, setOrderedMenus] = useState<posMenuInterface[]>([])
+  const handleOrderedMenuClick = (menu:posMenuInterface ) => {
+    const isExisted = orderedMenus.filter(orderedMenu => orderedMenu.menu._id == menu.menu._id)[0]
     if(!isExisted){
       setOrderedMenus(prev => [menu,...prev]);
     }
   }
 
   const allProductAmount = orderedMenus.reduce((pv, cv) => pv+cv.price , 0)
+  const totalDiscountedAmount = orderedMenus.reduce((pv, cv) =>pv+(cv.totalMenuDiscountedAmt ?cv.totalMenuDiscountedAmt :0) , 0)
+  const allTotalAmount = orderedMenus.reduce((pv, cv) => pv+cv.totalMenuAmt , 0)
+  const totalQty = orderedMenus.reduce((pv, cv) => pv+cv.qty , 0)
 
   return (
     <div className="flex items-start justify-start gap-6 ">
@@ -151,7 +154,7 @@ const ChooseProduct = () => {
 
           <div className="flex items-center justify-start gap-8 flex-wrap">
             {menus?.map((menu) => (
-              <PosMenuCardComponent handleOrderedMenuClick={handleOrderedMenuClick} key={menu?.menu?._id} menu={menu} />
+              <PosMenuCardComponent handleOrderedMenuClick={handleOrderedMenuClick} key={menu?.menu?._id} menu={{...menu, qty:1, totalMenuAmt: 1 * menu.price, menuDiscountedAmt: menu.disPercent? menu.price*(menu.disPercent/100):0, totalMenuDiscountedAmt: menu.disPercent? menu.price*(menu.disPercent/100):0}} />
             ))}
           </div>
         </div>
@@ -200,7 +203,7 @@ const ChooseProduct = () => {
             {
               orderedMenus?.map(menu => (
 
-                <PosAddedProductComponent key={menu?.menu._id} menu={menu} />
+                <PosAddedProductComponent key={menu?.menu._id} menu={menu} orderedMenus={orderedMenus} setOrderedMenus={setOrderedMenus} />
               ))
             }
             <ScrollBar className="" />
@@ -245,7 +248,7 @@ const ChooseProduct = () => {
 
             <div className="flex items-center justify-between w-full">
               <h6>Total Quantity :</h6>
-              <strong>0</strong>
+              <strong>{totalQty}</strong>
             </div>
 
             <div className="flex items-center justify-between w-full">
@@ -255,12 +258,12 @@ const ChooseProduct = () => {
 
             <div className="flex items-center justify-between w-full">
               <h6>Discount :</h6>
-              <strong>0</strong>
+              <strong>{totalDiscountedAmount}</strong>
             </div>
 
             <div className="flex items-center justify-between w-full mt-6">
               <h6>Total :</h6>
-              <strong>0 ks</strong>
+              <strong>{allTotalAmount - totalDiscountedAmount} ks</strong>
             </div>
           </div>
         </div>
@@ -275,7 +278,7 @@ const ChooseProduct = () => {
 
         <div id="payment_btn" className="">
           <Button variant={"secondary"} className="mt-6 w-full">
-            Grand Total: <span>1000 </span>ks{" "}
+            Grand Total: <span>{allTotalAmount- totalDiscountedAmount} </span>ks{" "}
           </Button>
 
           <div className="mt-6 flex items-center justify-start gap-4">
