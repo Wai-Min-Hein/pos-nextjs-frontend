@@ -60,3 +60,27 @@ export const csaSchema = z.object({
   name: z.string().min(1, { message: "Name must be included." }),
   code: z.string().min(1, { message: "Code must be included." }),
 })
+
+
+export const billSchema = z.object({
+  orderId: z.number(),
+  paymentMethod: z.string().min(1,{message: "Paymethod must be chosen."}),
+  productAmount: z.number(),
+  totalQty: z.number(),
+  totalDiscount: z.number().optional(),
+  totalTax: z.number().optional(),
+  totalPaymentAmount: z.number(),
+  customer: z.string().optional(),
+  billDiscount: z.number().optional(),
+  billTax: z.number().optional(),
+  billMenus: z.array(
+    z.object({
+      menuId: z.string().optional(),
+      price:z.number(),
+      qty: z.number(),
+      discountedAmount:z.number().optional(),
+      totalDiscountedAmount: z.number().optional()
+    })
+  )
+
+})

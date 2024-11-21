@@ -16,7 +16,11 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { useGetAllCategory } from "@/utils/TanStackHooks/usePos";
-import { fnbInterface, posMenuInterface, priceTableMenuInterface } from "@/types";
+import {
+  fnbInterface,
+  posMenuInterface,
+  priceTableMenuInterface,
+} from "@/types";
 
 import { useParams, usePathname } from "next/navigation";
 import { useGetPriceTableByAreaName } from "@/utils/TanStackHooks/usePos";
@@ -33,6 +37,20 @@ import { AiOutlineUserAdd } from "react-icons/ai";
 import PosAddedProductComponent from "@/components/PosAddedProductComponent";
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { billSchema } from "@/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 const ChooseProduct = () => {
   const tableArea = useParams().category as string;
@@ -61,18 +79,66 @@ const ChooseProduct = () => {
     });
   }, [api]);
 
-  const [orderedMenus, setOrderedMenus] = useState<posMenuInterface[]>([])
-  const handleOrderedMenuClick = (menu:posMenuInterface ) => {
-    const isExisted = orderedMenus.filter(orderedMenu => orderedMenu.menu._id == menu.menu._id)[0]
-    if(!isExisted){
-      setOrderedMenus(prev => [menu,...prev]);
+  const [orderedMenus, setOrderedMenus] = useState<posMenuInterface[]>([]);
+  const handleOrderedMenuClick = (menu: posMenuInterface) => {
+    const isExisted = orderedMenus.filter(
+      (orderedMenu) => orderedMenu.menu._id == menu.menu._id
+    )[0];
+    if (!isExisted) {
+      setOrderedMenus((prev) => [menu, ...prev]);
     }
+  };
+
+  const allProductAmount = orderedMenus.reduce((pv, cv) => pv + cv.price, 0);
+  const totalDiscountedAmount = orderedMenus.reduce(
+    (pv, cv) =>
+      pv + (cv.totalMenuDiscountedAmt ? cv.totalMenuDiscountedAmt : 0),
+    0
+  );
+  const allTotalAmount = orderedMenus.reduce(
+    (pv, cv) => pv + cv.totalMenuAmt,
+    0
+  );
+  const totalQty = orderedMenus.reduce((pv, cv) => pv + cv.qty, 0);
+
+  const form = useForm<z.infer<typeof billSchema>>({
+    resolver: zodResolver(billSchema),
+    defaultValues: {
+      orderId: 1,
+      customer: "",
+      paymentMethod: "cash",
+      productAmount: allProductAmount,
+      totalQty: totalQty,
+      totalDiscount: totalDiscountedAmount,
+      totalPaymentAmount: allTotalAmount - totalDiscountedAmount,
+      totalTax: 0,
+      billDiscount: 0,
+      billTax: 0,
+      billMenus: [{menuId:'', price:0, qty:0, discountedAmount:0, totalDiscountedAmount:0}]
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof billSchema>) {
+    console.log(values);
+
   }
 
-  const allProductAmount = orderedMenus.reduce((pv, cv) => pv+cv.price , 0)
-  const totalDiscountedAmount = orderedMenus.reduce((pv, cv) =>pv+(cv.totalMenuDiscountedAmt ?cv.totalMenuDiscountedAmt :0) , 0)
-  const allTotalAmount = orderedMenus.reduce((pv, cv) => pv+cv.totalMenuAmt , 0)
-  const totalQty = orderedMenus.reduce((pv, cv) => pv+cv.qty , 0)
+  useEffect(() => {
+    form.setValue('orderId',1)
+    // form.setValue('paymentMethod', 'cash')
+    form.setValue('productAmount', allProductAmount)
+    form.setValue('totalQty', totalQty)
+    form.setValue('totalDiscount', totalDiscountedAmount)
+    form.setValue('totalPaymentAmount', allTotalAmount - totalDiscountedAmount)
+
+    const billMenus  = orderedMenus.map(orderedMenu => ({menuId: orderedMenu.menu._id, price: orderedMenu.price, qty:orderedMenu.qty, discountedAmount: orderedMenu.menuDiscountedAmt, totalDiscountedAmount: orderedMenu.totalMenuDiscountedAmt }))
+
+    form.setValue('billMenus', billMenus)
+
+
+
+  },[allProductAmount,totalQty,totalDiscountedAmount,allTotalAmount,form,orderedMenus])
+
 
   return (
     <div className="flex items-start justify-start gap-6 ">
@@ -153,9 +219,29 @@ const ChooseProduct = () => {
           <h1 className="mb-6">Menus</h1>
 
           <div className="flex items-center justify-start gap-8 flex-wrap">
-            {menus?.map((menu) => (
-              <PosMenuCardComponent handleOrderedMenuClick={handleOrderedMenuClick} key={menu?.menu?._id} menu={{...menu, qty:1, totalMenuAmt: 1 * menu.price, menuDiscountedAmt: menu.disPercent? menu.price*(menu.disPercent/100):0, totalMenuDiscountedAmt: menu.disPercent? menu.price*(menu.disPercent/100):0}} />
-            ))}
+            {menus?.map((menu) => {
+              const menuDiscountedAmt = menu.disAmount
+                ? menu.disAmount
+                : menu.disPercent
+                ? menu.price * (menu.disPercent / 100)
+                : 0;
+
+              const totalMenuDiscountedAmt = menuDiscountedAmt;
+
+              return (
+                <PosMenuCardComponent
+                  handleOrderedMenuClick={handleOrderedMenuClick}
+                  key={menu?.menu?._id}
+                  menu={{
+                    ...menu,
+                    qty: 1,
+                    totalMenuAmt: 1 * menu.price,
+                    menuDiscountedAmt: menuDiscountedAmt,
+                    totalMenuDiscountedAmt: totalMenuDiscountedAmt,
+                  }}
+                />
+              );
+            })}
           </div>
         </div>
       </div>
@@ -163,134 +249,194 @@ const ChooseProduct = () => {
 
       {/* right side */}
 
-      <div className="basis-1/3 flex flex-col gap-6 p-6">
-        <div id="order_info" className="">
-          <h6>Order List</h6>
-          <h6>Order Id : 1</h6>
-        </div>
-
-        <div id="cus_info" className="">
-          <h6 className="py-4">Customer Information</h6>
-          <div className="flex items-center justify-between gap-4">
-            <Select>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Customer" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="Walkin">Walkin Customer</SelectItem>
-                  <SelectItem value="Wai">Wai Min</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-
-            <Button variant={"primary"}>
-              <AiOutlineUserAdd />
-            </Button>
-          </div>
-        </div>
-
-        <div id="product_info" className="">
-          <div className="flex items-center justify-start gap-2">
-            <h6>Added Menus</h6>
-            <span className="bg-btn w-5 h-5 rounded-full grid place-items-center text-white text-sm">
-              {orderedMenus.length}
-            </span>
-          </div>
-
-          <ScrollArea className="flex flex-col gap-5 h-44  overflow-y-auto">
-
-            {
-              orderedMenus?.map(menu => (
-
-                <PosAddedProductComponent key={menu?.menu._id} menu={menu} orderedMenus={orderedMenus} setOrderedMenus={setOrderedMenus} />
-              ))
-            }
-            <ScrollBar className="" />
-          </ScrollArea>
-        </div>
-
-        <div
-          id="tax_discount"
-          className="flex items-center justify-between gap-4"
-        >
-          <Select>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Discount" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="Walkin">0</SelectItem>
-                <SelectItem value="Wai">5</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-
-          <Select>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Tax" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="Walkin">0</SelectItem>
-                <SelectItem value="Wai">5</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div id="product_detail_info" className="">
-          <div className="flex items-start justify-start flex-col gap-4">
-            <div className="flex items-center justify-between w-full">
-              <h6>Product Amount :</h6>
-              <strong className="">{allProductAmount} ks</strong>
+      <Form {...form}>
+        <form className="space-y-8 basis-1/3">
+          <div className=" flex flex-col gap-6 p-6">
+            <div id="order_info" className="">
+              <h6>Order List</h6>
+              <h6>Order Id : 1</h6>
             </div>
 
-            <div className="flex items-center justify-between w-full">
-              <h6>Total Quantity :</h6>
-              <strong>{totalQty}</strong>
+            <div id="cus_info" className="">
+              <h6 className="py-4">Customer Information</h6>
+              <div className="flex items-center justify-between gap-4">
+                <FormField
+                  control={form.control}
+                  name="customer"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select customer" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Walkin">
+                            Walkin Customer
+                          </SelectItem>
+                          <SelectItem value="Wai">Wai Min</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button type="button" variant={"primary"}>
+                  <AiOutlineUserAdd />
+                </Button>
+              </div>
             </div>
 
-            <div className="flex items-center justify-between w-full">
-              <h6>Tax :</h6>
-              <strong>0</strong>
+            <div id="product_info" className="">
+              <div className="flex items-center justify-start gap-2">
+                <h6>Added Menus</h6>
+                <span className="bg-btn w-5 h-5 rounded-full grid place-items-center text-white text-sm">
+                  {orderedMenus.length}
+                </span>
+              </div>
+
+              <ScrollArea className="flex flex-col gap-5 h-44  overflow-y-auto">
+                {orderedMenus?.map((menu) => (
+                  <PosAddedProductComponent
+                    key={menu?.menu._id}
+                    menu={menu}
+                    orderedMenus={orderedMenus}
+                    setOrderedMenus={setOrderedMenus}
+                  />
+                ))}
+                <ScrollBar className="" />
+              </ScrollArea>
             </div>
 
-            <div className="flex items-center justify-between w-full">
-              <h6>Discount :</h6>
-              <strong>{totalDiscountedAmount}</strong>
+            <div
+              id="tax_discount"
+              className="flex items-center justify-between gap-4"
+            >
+              
+
+              <FormField
+                control={form.control}
+                name="billDiscount"
+                render={({ field }) => (
+                  <FormItem>
+                    <Select
+                      onValueChange={(value)=> field.onChange(Number(value))}
+                      defaultValue={field.value?.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="0" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value={'0'}>0</SelectItem>
+                        <SelectItem value={'5'}>5</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="billTax"
+                render={({ field }) => (
+                  <FormItem>
+                    <Select
+                      onValueChange={(value)=> field.onChange(Number(value))}
+                      defaultValue={field.value?.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="0" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                      <SelectItem value={'0'}>0</SelectItem>
+                      <SelectItem value={'5'}>5</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
-            <div className="flex items-center justify-between w-full mt-6">
-              <h6>Total :</h6>
-              <strong>{allTotalAmount - totalDiscountedAmount} ks</strong>
+            <div id="product_detail_info" className="">
+              <div className="flex items-start justify-start flex-col gap-4">
+                <div className="flex items-center justify-between w-full">
+                  <h6>Product Amount :</h6>
+                  <strong className="">{allProductAmount} ks</strong>
+                </div>
+
+                <div className="flex items-center justify-between w-full">
+                  <h6>Total Quantity :</h6>
+                  <strong>{totalQty}</strong>
+                </div>
+
+                <div className="flex items-center justify-between w-full">
+                  <h6>Tax :</h6>
+                  <strong>0</strong>
+                </div>
+
+                <div className="flex items-center justify-between w-full">
+                  <h6>Discount :</h6>
+                  <strong>{totalDiscountedAmount}</strong>
+                </div>
+
+                <div className="flex items-center justify-between w-full mt-6">
+                  <h6>Total :</h6>
+                  <strong>{allTotalAmount - totalDiscountedAmount} ks</strong>
+                </div>
+              </div>
+            </div>
+
+            <div id="payment_info" className="">
+              <h6>Payment Methods</h6>
+
+              <div className="mt-4">
+                <Button type="button" variant={"outline"}>
+                  Cash
+                </Button>
+              </div>
+            </div>
+
+            <div id="payment_btn" className="">
+              <Button
+                type="button"
+                variant={"secondary"}
+                className="mt-6 w-full"
+              >
+                Grand Total:{" "}
+                <span>{allTotalAmount - totalDiscountedAmount} </span>ks{" "}
+              </Button>
+
+              <div className="mt-6 flex items-center justify-start gap-4">
+                <Button type="button" variant={"primary"} className="basis-1/2">
+                  Comfirm Order
+                </Button>
+                <Button
+                  onClick={form.handleSubmit(onSubmit)}
+                  variant={"secondary"}
+                  className="basis-1/2"
+                >
+                  Payment
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        </form>
+      </Form>
 
-        <div id="payment_info" className="">
-          <h6>Payment Methods</h6>
-
-          <div className="mt-4">
-            <Button variant={"outline"}>Cash</Button>
-          </div>
-        </div>
-
-        <div id="payment_btn" className="">
-          <Button variant={"secondary"} className="mt-6 w-full">
-            Grand Total: <span>{allTotalAmount- totalDiscountedAmount} </span>ks{" "}
-          </Button>
-
-          <div className="mt-6 flex items-center justify-start gap-4">
-            <Button variant={"primary"} className="basis-1/2">
-              Comfirm Order
-            </Button>
-            <Button variant={"secondary"} className="basis-1/2">
-              Payment
-            </Button>
-          </div>
-        </div>
-      </div>
       {/* right side */}
     </div>
   );

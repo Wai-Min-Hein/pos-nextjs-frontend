@@ -32,7 +32,6 @@ const PosAddedProductComponent: React.FC<props> = ({menu,orderedMenus,setOrdered
             totalMenuDiscountedAmt: updatedMenus[currentMenuIndex].menuDiscountedAmt&& (updatedMenus[currentMenuIndex].qty + 1) * updatedMenus[currentMenuIndex].menuDiscountedAmt
         };
 
-        console.log(updatedMenus);
         // Update state with new array
         setOrderedMenus(updatedMenus);
     }
@@ -83,7 +82,15 @@ const PosAddedProductComponent: React.FC<props> = ({menu,orderedMenus,setOrdered
       </div>
 
       <span className="">{menu.totalMenuAmt - (menu.totalMenuDiscountedAmt ? menu.totalMenuDiscountedAmt:0)} Ks
-        {menu.menuDiscountedAmt && <span>(-{menu.disPercent}%)</span> }
+        {menu.menuDiscountedAmt && 
+        
+        (
+          menu.disPercent?
+          <span> (-{menu.disPercent}%)</span>:
+          <span> (- {menu.qty *menu.disAmount} Ks)</span>
+        )
+        
+        }
         
       </span>
 

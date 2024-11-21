@@ -63,8 +63,6 @@ const FnbDetail = () => {
       name: "",
       description: "",
       image: "",
-      // createdByImage: "",
-      // createdByName: "",
       category: "",
       sku: "",
       unit: "",
@@ -160,31 +158,31 @@ const FnbDetail = () => {
             </div>
 
             <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Category</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Category" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {
-                    menuCategories?.map(menu => (
-                      <SelectItem key={menu?._id} value={menu?._id || ''}>{menu?.name}</SelectItem>
-                    ))
-                  }
-                 
-                </SelectContent>
-              </Select>
-              
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {
+                        menuCategories?.map(menu => (
+                          <SelectItem key={menu?._id} value={menu?._id || ''}>{menu?.name}</SelectItem>
+                        ))
+                      }
+                    
+                    </SelectContent>
+                  </Select>
+                  
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="flex items-center justify-start gap-4">
               <FormField
