@@ -51,8 +51,23 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useAppDispatch, useAppSelector } from "@/hooks/SliceHook";
+import { addConfirmedOrder, addCurrentOrderId } from "@/slice/OrderIdSlice";
+import { useRouter } from "next/navigation";
 
 const ChooseProduct = () => {
+  
+
+  const router = useRouter()
+
+  const params = useParams<{id: string}>()
+  const orderId = parseInt(params.id, 10);
+
+  const {menus: currentOrder} = useAppSelector(state => state.order)
+
+  const currentOrderedMenu = currentOrder.filter(order => order.orderId == orderId)[0]
+
+  const dispatch = useAppDispatch()
   const tableArea = useParams().category as string;
   const { data: priceTable } = useGetPriceTableByAreaName(tableArea);
 
@@ -87,30 +102,37 @@ const ChooseProduct = () => {
     if (!isExisted) {
       setOrderedMenus((prev) => [menu, ...prev]);
     }
+
   };
 
-  const allProductAmount = orderedMenus.reduce((pv, cv) => pv + cv.price, 0);
-  const totalDiscountedAmount = orderedMenus.reduce(
-    (pv, cv) =>
-      pv + (cv.totalMenuDiscountedAmt ? cv.totalMenuDiscountedAmt : 0),
+  
+ 
+
+  const allProductAmount = currentOrderedMenu? currentOrderedMenu.productAmount:  orderedMenus.reduce((pv, cv) => pv + cv.price, 0);
+  const totalDiscountedAmount = currentOrderedMenu?.totalDiscount ?? orderedMenus.reduce(
+    (pv, cv) => pv + (cv.totalMenuDiscountedAmt ?? 0),
     0
   );
-  const allTotalAmount = orderedMenus.reduce(
+  const allTotalAmount =   orderedMenus.reduce(
     (pv, cv) => pv + cv.totalMenuAmt,
     0
   );
-  const totalQty = orderedMenus.reduce((pv, cv) => pv + cv.qty, 0);
+
+  const totalPaymentAmount =  currentOrderedMenu? currentOrderedMenu.totalPaymentAmount: ( allTotalAmount - totalDiscountedAmount)
+
+
+  const totalQty = currentOrderedMenu? currentOrderedMenu.totalQty: ( orderedMenus.reduce((pv, cv) => pv + cv.qty, 0));
 
   const form = useForm<z.infer<typeof billSchema>>({
     resolver: zodResolver(billSchema),
     defaultValues: {
-      orderId: 1,
+      orderId,
       customer: "",
       paymentMethod: "cash",
-      productAmount: allProductAmount,
+      productAmount:  allProductAmount,
       totalQty: totalQty,
       totalDiscount: totalDiscountedAmount,
-      totalPaymentAmount: allTotalAmount - totalDiscountedAmount,
+      totalPaymentAmount: totalPaymentAmount,
       totalTax: 0,
       billDiscount: 0,
       billTax: 0,
@@ -119,17 +141,22 @@ const ChooseProduct = () => {
   });
 
   function onSubmit(values: z.infer<typeof billSchema>) {
-    console.log(values);
+    dispatch(addCurrentOrderId())
+  }
 
+  const handleConfirmedOrder = (): void=> {
+    const formData = form.getValues()
+    dispatch(addConfirmedOrder(formData))
+    router.push('/pos')
   }
 
   useEffect(() => {
-    form.setValue('orderId',1)
+    // form.setValue('orderId',1)
     // form.setValue('paymentMethod', 'cash')
     form.setValue('productAmount', allProductAmount)
     form.setValue('totalQty', totalQty)
     form.setValue('totalDiscount', totalDiscountedAmount)
-    form.setValue('totalPaymentAmount', allTotalAmount - totalDiscountedAmount)
+    form.setValue('totalPaymentAmount', totalPaymentAmount)
 
     const billMenus  = orderedMenus.map(orderedMenu => ({menuId: orderedMenu.menu._id, price: orderedMenu.price, qty:orderedMenu.qty, discountedAmount: orderedMenu.menuDiscountedAmt, totalDiscountedAmount: orderedMenu.totalMenuDiscountedAmt }))
 
@@ -302,14 +329,26 @@ const ChooseProduct = () => {
               </div>
 
               <ScrollArea className="flex flex-col gap-5 h-44  overflow-y-auto">
-                {orderedMenus?.map((menu) => (
-                  <PosAddedProductComponent
-                    key={menu?.menu._id}
-                    menu={menu}
-                    orderedMenus={orderedMenus}
-                    setOrderedMenus={setOrderedMenus}
-                  />
-                ))}
+                {
+                  currentOrderedMenu ? (
+                    currentOrderedMenu.billMenus?.map((menu) => (
+                      <div className="flex items-center justify-between" key={menu.menuId}> 
+                        <h1>{menu.menuId}</h1>
+                        <p>{menu.qty}</p>
+                      </div>
+                    ))
+                  ):(
+                    orderedMenus?.map((menu) => (
+                      <PosAddedProductComponent
+                        key={menu?.menu._id}
+                        menu={menu}
+                        orderedMenus={orderedMenus}
+                        setOrderedMenus={setOrderedMenus}
+                      />
+                    ))
+                  )
+                }
+                
                 <ScrollBar className="" />
               </ScrollArea>
             </div>
@@ -395,7 +434,7 @@ const ChooseProduct = () => {
 
                 <div className="flex items-center justify-between w-full mt-6">
                   <h6>Total :</h6>
-                  <strong>{allTotalAmount - totalDiscountedAmount} ks</strong>
+                  <strong>{totalPaymentAmount} ks</strong>
                 </div>
               </div>
             </div>
@@ -421,7 +460,9 @@ const ChooseProduct = () => {
               </Button>
 
               <div className="mt-6 flex items-center justify-start gap-4">
-                <Button type="button" variant={"primary"} className="basis-1/2">
+                <Button
+                onClick={() => handleConfirmedOrder()}
+                 type="button" variant={"primary"} className="basis-1/2">
                   Comfirm Order
                 </Button>
                 <Button

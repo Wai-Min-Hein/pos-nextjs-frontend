@@ -147,3 +147,5 @@ declare type priceTableInterface = {
       menuDiscountedAmt?: number,
       totalMenuDiscountedAmt?: number
     }
+
+    

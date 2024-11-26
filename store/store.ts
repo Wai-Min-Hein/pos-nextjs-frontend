@@ -11,7 +11,7 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
-  orderId: OrderIdSlice
+  order: OrderIdSlice
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
