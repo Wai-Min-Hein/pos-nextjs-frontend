@@ -1,5 +1,5 @@
 import { RootState } from '@/store/store'
-import { posMenuInterface } from '@/types'
+import { fnbInterface, posMenuInterface } from '@/types'
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 
@@ -24,7 +24,7 @@ interface Order {
   customer?: string; // optional
   billDiscount?: number; // optional
   billTax?: number; // optional
-  billMenus: BillMenu[]; // required, array of BillMenu objects
+  billMenus: posMenuInterface[]; // required, array of BillMenu objects
 }
 // Define a type for the slice state
 interface OrderIdStateInterface {
@@ -56,8 +56,19 @@ export const counterSlice = createSlice({
       }
     },
     addConfirmedOrder : (state ,action: PayloadAction<Order>) => {
-      state.menus.push(action.payload);
-      state.orderId += 1
+      const existingOrderIndex = state.menus.findIndex(menu => menu.orderId === action.payload.orderId);
+      
+      if (existingOrderIndex !== -1) {
+        // If it exists, replace the existing order with the new one
+        state.menus[existingOrderIndex] = action.payload;
+      } else {
+        // If it doesn't exist, add the new order to the menus array
+        state.menus.push(action.payload);
+        
+        // Increment the orderId for future orders if needed
+        state.orderId += 1; 
+      }
+
     }
     
   },

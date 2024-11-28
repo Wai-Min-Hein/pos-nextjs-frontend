@@ -119,6 +119,14 @@ declare type priceTableInterface = {
   }
 
 
+  declare interface posMenuInterface extends priceTableMenuInterface{
+    qty: number,
+    totalMenuAmt: number,
+    menuDiscountedAmt?: number,
+    totalMenuDiscountedAmt?: number
+  }
+
+
   declare type priceTableMenuFormInterface = {
     menu : string;
     price: number;
@@ -141,11 +149,5 @@ declare type priceTableInterface = {
 
 
 
-  declare interface posMenuInterface extends priceTableMenuInterface{
-      qty: number,
-      totalMenuAmt: number,
-      menuDiscountedAmt?: number,
-      totalMenuDiscountedAmt?: number
-    }
 
     

@@ -94,7 +94,7 @@ const ChooseProduct = () => {
     });
   }, [api]);
 
-  const [orderedMenus, setOrderedMenus] = useState<posMenuInterface[]>([]);
+  const [orderedMenus, setOrderedMenus] = useState<posMenuInterface[]>(currentOrderedMenu? currentOrderedMenu.billMenus:[]);
   const handleOrderedMenuClick = (menu: posMenuInterface) => {
     const isExisted = orderedMenus.filter(
       (orderedMenu) => orderedMenu.menu._id == menu.menu._id
@@ -146,9 +146,12 @@ const ChooseProduct = () => {
 
   const handleConfirmedOrder = (): void=> {
     const formData = form.getValues()
-    dispatch(addConfirmedOrder(formData))
+    formData.billMenus = orderedMenus
+    const newFormData = {...formData, billMenus:orderedMenus}
+    dispatch(addConfirmedOrder(newFormData))
     router.push('/pos')
   }
+
 
   useEffect(() => {
     // form.setValue('orderId',1)
@@ -330,23 +333,14 @@ const ChooseProduct = () => {
 
               <ScrollArea className="flex flex-col gap-5 h-44  overflow-y-auto">
                 {
-                  currentOrderedMenu ? (
-                    currentOrderedMenu.billMenus?.map((menu) => (
-                      <div className="flex items-center justify-between" key={menu.menuId}> 
-                        <h1>{menu.menuId}</h1>
-                        <p>{menu.qty}</p>
-                      </div>
-                    ))
-                  ):(
-                    orderedMenus?.map((menu) => (
-                      <PosAddedProductComponent
-                        key={menu?.menu._id}
-                        menu={menu}
-                        orderedMenus={orderedMenus}
-                        setOrderedMenus={setOrderedMenus}
-                      />
-                    ))
-                  )
+                  orderedMenus?.map((menu) => (
+                    <PosAddedProductComponent
+                      key={menu?.menu._id}
+                      menu={menu}
+                      orderedMenus={orderedMenus}
+                      setOrderedMenus={setOrderedMenus}
+                    />
+                  ))
                 }
                 
                 <ScrollBar className="" />
