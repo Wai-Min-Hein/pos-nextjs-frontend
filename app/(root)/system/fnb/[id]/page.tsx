@@ -57,6 +57,8 @@ const FnbDetail = () => {
       }
     }
   })
+
+  
   const form = useForm<z.infer<typeof fnbSchema>>({
     resolver: zodResolver(fnbSchema),
     defaultValues: {

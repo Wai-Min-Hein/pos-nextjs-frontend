@@ -69,12 +69,18 @@ export const counterSlice = createSlice({
         state.orderId += 1; 
       }
 
+    },
+    deleteConfirmedOrder : (state ,action: PayloadAction<number>) => {
+      const orderId = action.payload      
+      const leftMenu = state.menus.filter(menu => menu.orderId != orderId)
+      state.menus = leftMenu
+
     }
     
   },
 })
 
-export const { addCurrentOrderId,addConfirmedOrder,resetCurrentOrderId } = counterSlice.actions
+export const { addCurrentOrderId,addConfirmedOrder,resetCurrentOrderId,deleteConfirmedOrder } = counterSlice.actions
 
 
 

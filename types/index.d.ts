@@ -147,6 +147,29 @@ declare type priceTableInterface = {
       menus: priceTableMenuFormInterface[];
     }
 
+    declare type BillMenu = {
+      menuId?: string;
+      price: number;
+      qty: number;
+      discountedAmount?: number;
+      totalDiscountedAmount?: number;
+    }
+
+    declare type posBillInterface = {
+    orderId: string | number; // Depending on the use case, choose one
+    customer?: string;
+    paymentMethod: string; // Extend this as needed
+    productAmount: number;
+    totalQty: number;
+    totalDiscount?: number;
+    totalPaymentAmount: number;
+    totalTax?: number;
+    billDiscount?: number;
+    billTax?: number;
+    billMenus: BillMenu[];
+    }
+
+
 
 
 

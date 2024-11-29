@@ -18,6 +18,7 @@ import {
 import { useGetAllCategory } from "@/utils/TanStackHooks/usePos";
 import {
   fnbInterface,
+  posBillInterface,
   posMenuInterface,
   priceTableMenuInterface,
 } from "@/types";
@@ -52,10 +53,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useAppDispatch, useAppSelector } from "@/hooks/SliceHook";
-import { addConfirmedOrder, addCurrentOrderId } from "@/slice/OrderIdSlice";
+import { addConfirmedOrder, addCurrentOrderId, deleteConfirmedOrder } from "@/slice/OrderIdSlice";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 const ChooseProduct = () => {
+  const baseApi = process.env.NEXT_PUBLIC_BASE_API;
   
 
   const router = useRouter()
@@ -140,8 +144,23 @@ const ChooseProduct = () => {
     },
   });
 
+  const mutation = useMutation({
+    mutationFn: async (data: posBillInterface) => {
+      try {
+        const res = await axios.post(`${baseApi}/posbill`, data)
+        router.push("/pos")
+      } catch (error) {
+        console.log(error);
+        
+      }
+    }
+  })
+
   function onSubmit(values: z.infer<typeof billSchema>) {
     dispatch(addCurrentOrderId())
+    mutation.mutate(values)
+    dispatch(deleteConfirmedOrder(orderId))
+
   }
 
   const handleConfirmedOrder = (): void=> {
