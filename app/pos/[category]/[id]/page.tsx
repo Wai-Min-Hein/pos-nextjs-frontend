@@ -112,7 +112,7 @@ const ChooseProduct = () => {
   
  
 
-  const allProductAmount = currentOrderedMenu? currentOrderedMenu.productAmount:  orderedMenus.reduce((pv, cv) => pv + cv.price, 0);
+  const allProductAmount = currentOrderedMenu? currentOrderedMenu.productAmount:  orderedMenus.reduce((pv, cv) => pv + (cv.price * cv.qty), 0);
   const totalDiscountedAmount = currentOrderedMenu?.totalDiscount ?? orderedMenus.reduce(
     (pv, cv) => pv + (cv.totalMenuDiscountedAmt ?? 0),
     0
@@ -131,6 +131,7 @@ const ChooseProduct = () => {
     resolver: zodResolver(billSchema),
     defaultValues: {
       orderId,
+      area: tableArea,
       customer: "",
       paymentMethod: "cash",
       productAmount:  allProductAmount,
@@ -160,12 +161,10 @@ const ChooseProduct = () => {
     dispatch(addCurrentOrderId())
     mutation.mutate(values)
     dispatch(deleteConfirmedOrder(orderId))
-
   }
 
   const handleConfirmedOrder = (): void=> {
     const formData = form.getValues()
-    formData.billMenus = orderedMenus
     const newFormData = {...formData, billMenus:orderedMenus}
     dispatch(addConfirmedOrder(newFormData))
     router.push('/pos')
@@ -181,6 +180,7 @@ const ChooseProduct = () => {
     form.setValue('totalPaymentAmount', totalPaymentAmount)
 
     const billMenus  = orderedMenus.map(orderedMenu => ({menuId: orderedMenu.menu._id, price: orderedMenu.price, qty:orderedMenu.qty, discountedAmount: orderedMenu.menuDiscountedAmt, totalDiscountedAmount: orderedMenu.totalMenuDiscountedAmt }))
+
 
     form.setValue('billMenus', billMenus)
 
@@ -241,7 +241,7 @@ const ChooseProduct = () => {
                     isActive={currentCategory == "All"}
                   />
                 </CarouselItem>
-                {allCategories?.map((category) => {
+                {/* {allCategories?.map((category) => {
                   return (
                     <CarouselItem
                       onClick={() => setCurrentCategory(category._id)}
@@ -258,7 +258,7 @@ const ChooseProduct = () => {
                       )}
                     </CarouselItem>
                   );
-                })}
+                })} */}
               </CarouselContent>
             </Carousel>
           </div>
@@ -327,7 +327,7 @@ const ChooseProduct = () => {
                           <SelectItem value="Walkin">
                             Walkin Customer
                           </SelectItem>
-                          <SelectItem value="Wai">Wai Min</SelectItem>
+                          <SelectItem value="Wai Min">Wai Min</SelectItem>
                         </SelectContent>
                       </Select>
 
@@ -442,7 +442,7 @@ const ChooseProduct = () => {
 
                 <div className="flex items-center justify-between w-full">
                   <h6>Discount :</h6>
-                  <strong>{totalDiscountedAmount}</strong>
+                  <strong>{totalDiscountedAmount} Ks</strong>
                 </div>
 
                 <div className="flex items-center justify-between w-full mt-6">

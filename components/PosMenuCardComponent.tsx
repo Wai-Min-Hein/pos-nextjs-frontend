@@ -1,4 +1,4 @@
-import {  jacket } from "@/constant/image";
+import {  category } from "@/constant/image";
 import { posMenuInterface } from "@/types";
 import Image from "next/image";
 import React from "react";
@@ -11,10 +11,10 @@ interface props{
 
 const PosMenuCardComponent: React.FC<props> = ({menu,handleOrderedMenuClick}) => {
   return (
-    <div onClick={() =>handleOrderedMenuClick&& handleOrderedMenuClick(menu)} className="basis-[22%] select-none cursor-pointer bg-white px-3 py-4 rounded shadow-md">
+    <div onClick={() =>handleOrderedMenuClick&& handleOrderedMenuClick(menu)} className="flex flex-col justify-between basis-[22%] select-none cursor-pointer bg-white px-3 py-4 rounded shadow-lg min-h-60">
       <div className="group/img grid place-items-center p-6 bg-gray rounded-md">
         <div className="relative w-20 h-20 group-hover/img:scale-125 duration-300">
-          <Image src={jacket} alt="Category" fill objectFit="cover" />
+          <Image src={category} alt="Category" fill objectFit="cover" />
         </div>
       </div>
       

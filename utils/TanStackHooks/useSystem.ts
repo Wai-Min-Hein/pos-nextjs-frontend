@@ -3,11 +3,13 @@ import {
   fnbInterface,
   priceTableInterface,
   priceTableMenuInterface,
+  posBillInterface,
+  posBillReportInterface,
 } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
-// const baseApi = process.env.NEXT_PUBLIC_BASE_API;
-const baseApi = 'https://expresspos.vercel.app/api'
+
+const baseApi = process.env.NEXT_PUBLIC_BASE_API;
 
 
 async function getAllFnb(): Promise<fnbInterface[]> {
@@ -101,3 +103,21 @@ export const useGetSinglePriceTable = (id: string) => {
     queryFn: () => getSinglePriceTable(id),
   });
 };
+
+async function  getAllPosSaleReports(): Promise<posBillReportInterface[]> {
+  try {
+    const res = await fetch(`${baseApi}/posbill`)
+    const result = await res.json()
+    return result.datas
+  } catch (error) {
+    throw error
+    
+  }
+}
+
+export const useGetAllPosSaleReport = () => {
+  return useQuery({
+    queryKey: ["posbillreports"],
+    queryFn: () => getAllPosSaleReports(),
+  });
+}

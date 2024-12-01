@@ -148,7 +148,7 @@ declare type priceTableInterface = {
     }
 
     declare type BillMenu = {
-      menuId?: string;
+      menuId?: string | fnbInterface;
       price: number;
       qty: number;
       discountedAmount?: number;
@@ -156,8 +156,10 @@ declare type priceTableInterface = {
     }
 
     declare type posBillInterface = {
+      _id?: string,
     orderId: string | number; // Depending on the use case, choose one
     customer?: string;
+    area: string;
     paymentMethod: string; // Extend this as needed
     productAmount: number;
     totalQty: number;
@@ -167,6 +169,33 @@ declare type priceTableInterface = {
     billDiscount?: number;
     billTax?: number;
     billMenus: BillMenu[];
+    createdAt?: Date
+    }
+
+
+    declare type BillMenuReport = {
+      menuId?:  fnbInterface;
+      price: number;
+      qty: number;
+      discountedAmount?: number;
+      totalDiscountedAmount?: number;
+    }
+
+    declare type posBillReportInterface = {
+      _id?: string,
+    orderId: string | number; // Depending on the use case, choose one
+    customer?: string;
+    area: string;
+    paymentMethod: string; // Extend this as needed
+    productAmount: number;
+    totalQty: number;
+    totalDiscount?: number;
+    totalPaymentAmount: number;
+    totalTax?: number;
+    billDiscount?: number;
+    billTax?: number;
+    billMenus: BillMenuReport[];
+    createdAt?: Date
     }
 
 

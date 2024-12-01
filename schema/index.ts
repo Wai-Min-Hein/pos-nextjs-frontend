@@ -64,6 +64,7 @@ export const csaSchema = z.object({
 
 export const billSchema = z.object({
   orderId: z.number(),
+  area: z.string(),
   paymentMethod: z.string().min(1,{message: "Paymethod must be chosen."}),
   productAmount: z.number(),
   totalQty: z.number(),
