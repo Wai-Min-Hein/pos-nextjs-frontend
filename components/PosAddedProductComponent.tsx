@@ -1,4 +1,4 @@
-import { branch,jacket } from "@/constant/image";
+import { branch,category } from "@/constant/image";
 import Image from "next/image";
 import React from "react";
 import { FiEdit, FiMinusCircle, FiPlusCircle } from "react-icons/fi";
@@ -63,13 +63,13 @@ const PosAddedProductComponent: React.FC<props> = ({menu,orderedMenus,setOrdered
       <div className="flex items-center justify-start gap-6">
         <div className="bg-gray rounded-sm p-2">
           <div className="relative w-12 h-12">
-            <Image src={jacket} alt="Category" fill objectFit="cover" />
+            <Image src={category} alt="Category" fill objectFit="cover" />
           </div>
         </div>
         
 
         <div className="flex flex-col">
-          <span>{menu?.menu.sku}</span>
+          {/* <span>{menu?.menu.sku}</span> */}
           <strong>{menu?.menu.name}</strong>
           <span>{menu?.price} Ks</span>
         </div>
@@ -81,18 +81,18 @@ const PosAddedProductComponent: React.FC<props> = ({menu,orderedMenus,setOrdered
         <FiPlusCircle onClick={() => handlePlusQty(menu)} className="cursor-pointer" />
       </div>
 
-      <span className="">{menu.totalMenuAmt - (menu.totalMenuDiscountedAmt ? menu.totalMenuDiscountedAmt:0)} Ks
+      <p className="">{menu.totalMenuAmt - (menu.totalMenuDiscountedAmt ? menu.totalMenuDiscountedAmt:0)} Ks
         {menu.menuDiscountedAmt && 
         
         (
           menu.disPercent?
-          <span> (-{menu.disPercent}%)</span>:
-          <span> (- {menu.qty *menu.disAmount} Ks)</span>
+          <span className="block"> (-{menu.disPercent}%)</span>:
+          <span className="block"> (- {menu.qty *menu.disAmount} Ks)</span>
         )
         
         }
         
-      </span>
+      </p>
 
       {/* <Button variant={"outline"}>
         <FiEdit />

@@ -57,6 +57,7 @@ import { addConfirmedOrder, addCurrentOrderId, deleteConfirmedOrder } from "@/sl
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { Label } from "@radix-ui/react-select";
 
 const ChooseProduct = () => {
   const baseApi = process.env.NEXT_PUBLIC_BASE_API;
@@ -127,6 +128,11 @@ const ChooseProduct = () => {
 
   const totalQty = currentOrderedMenu? currentOrderedMenu.totalQty: ( orderedMenus.reduce((pv, cv) => pv + cv.qty, 0));
 
+
+
+
+
+
   const form = useForm<z.infer<typeof billSchema>>({
     resolver: zodResolver(billSchema),
     defaultValues: {
@@ -139,11 +145,40 @@ const ChooseProduct = () => {
       totalDiscount: totalDiscountedAmount,
       totalPaymentAmount: totalPaymentAmount,
       totalTax: 0,
-      billDiscount: 0,
-      billTax: 0,
+      billDiscount: currentOrderedMenu? currentOrderedMenu.billDiscount: 0,
+      billTax: currentOrderedMenu? currentOrderedMenu.billTax: 0,
       billMenus: [{menuId:'', price:0, qty:0, discountedAmount:0, totalDiscountedAmount:0}]
     },
   });
+
+  const billTaxPercent = form.getValues('billTax')??0
+
+  const totalBillTax = totalPaymentAmount* (billTaxPercent /100)
+
+  const billDiscountPercent = form.getValues('billDiscount')??0
+
+  const totalBillDiscount = totalPaymentAmount* (billDiscountPercent /100)
+    const totalPaymentAmountAferBillTaxAndDis = (totalPaymentAmount + totalBillTax) -totalBillDiscount
+
+    
+
+
+  useEffect(() =>{
+    form.setValue('totalTax', totalBillTax)
+    form.setValue('billDiscount', totalBillDiscount)
+
+
+    form.setValue('totalPaymentAmount', totalPaymentAmountAferBillTaxAndDis)
+
+
+  }, [form,totalBillTax,totalBillDiscount,totalPaymentAmount] )
+  
+
+
+
+
+
+ 
 
   const mutation = useMutation({
     mutationFn: async (data: posBillInterface) => {
@@ -172,12 +207,9 @@ const ChooseProduct = () => {
 
 
   useEffect(() => {
-    // form.setValue('orderId',1)
-    // form.setValue('paymentMethod', 'cash')
     form.setValue('productAmount', allProductAmount)
     form.setValue('totalQty', totalQty)
     form.setValue('totalDiscount', totalDiscountedAmount)
-    form.setValue('totalPaymentAmount', totalPaymentAmount)
 
     const billMenus  = orderedMenus.map(orderedMenu => ({menuId: orderedMenu.menu._id, price: orderedMenu.price, qty:orderedMenu.qty, discountedAmount: orderedMenu.menuDiscountedAmt, totalDiscountedAmount: orderedMenu.totalMenuDiscountedAmt }))
 
@@ -368,7 +400,7 @@ const ChooseProduct = () => {
 
             <div
               id="tax_discount"
-              className="flex items-center justify-between gap-4"
+              className="flex items-center justify-start gap-4"
             >
               
 
@@ -376,14 +408,18 @@ const ChooseProduct = () => {
                 control={form.control}
                 name="billDiscount"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex items-center justify-start gap-2">
+                    <FormLabel>Discount: </FormLabel>
                     <Select
                       onValueChange={(value)=> field.onChange(Number(value))}
                       defaultValue={field.value?.toString()}
                     >
+
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="0" />
+
+                        <SelectTrigger className="w-32">
+
+                          <SelectValue placeholder="Discount" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -401,14 +437,16 @@ const ChooseProduct = () => {
                 control={form.control}
                 name="billTax"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex items-center justify-start gap-2">
+                    <FormLabel>Tax: </FormLabel>
+
                     <Select
                       onValueChange={(value)=> field.onChange(Number(value))}
                       defaultValue={field.value?.toString()}
                     >
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="0" />
+                        <SelectTrigger className="w-32">
+                          <SelectValue placeholder="Tax" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -437,17 +475,17 @@ const ChooseProduct = () => {
 
                 <div className="flex items-center justify-between w-full">
                   <h6>Tax :</h6>
-                  <strong>0</strong>
+                  <strong>{totalBillTax} Ks</strong>
                 </div>
 
                 <div className="flex items-center justify-between w-full">
                   <h6>Discount :</h6>
-                  <strong>{totalDiscountedAmount} Ks</strong>
+                  <strong>{totalDiscountedAmount + totalBillDiscount} Ks</strong>
                 </div>
 
                 <div className="flex items-center justify-between w-full mt-6">
                   <h6>Total :</h6>
-                  <strong>{totalPaymentAmount} ks</strong>
+                  <strong>{totalPaymentAmountAferBillTaxAndDis} ks</strong>
                 </div>
               </div>
             </div>
@@ -469,7 +507,7 @@ const ChooseProduct = () => {
                 className="mt-6 w-full"
               >
                 Grand Total:{" "}
-                <span>{allTotalAmount - totalDiscountedAmount} </span>ks{" "}
+                <span>{totalPaymentAmountAferBillTaxAndDis} </span>ks{" "}
               </Button>
 
               <div className="mt-6 flex items-center justify-start gap-4">
