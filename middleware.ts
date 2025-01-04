@@ -9,19 +9,16 @@ export default function middleware(req: NextRequest) {
   // Check if the route is public
   const isPublicRoute = publicRoutes.includes(path);
 
-  // Access cookies manually
-  const cookieHeader = req.headers.get('cookie');
-  const token = cookieHeader
-    ? cookieHeader.split(';').find(c => c.trim().startsWith('token='))
-    : null;
-  const tokenValue = token ? token.split('=')[1] : null;
+
+  let token = req.cookies.get('token')?.value
+  console.log("token: ", token)
 
 
   // Redirect based on authentication
-  if (!isPublicRoute && !tokenValue) {
+  if (!isPublicRoute && !token) {
     return NextResponse.redirect(new URL('/login', req.nextUrl));
   }
-  if (isPublicRoute && tokenValue) {
+  if (isPublicRoute && token) {
     return NextResponse.redirect(new URL('/system/fnb', req.nextUrl));
   }
 
