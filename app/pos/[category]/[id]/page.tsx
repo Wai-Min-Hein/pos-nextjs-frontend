@@ -335,7 +335,7 @@ const ChooseProduct = () => {
           <div className=" flex flex-col gap-6 p-6">
             <div id="order_info" className="">
               <h6>Order List</h6>
-              <h6>Order Id : 1</h6>
+              <h6>Order Id : {orderId}</h6>
             </div>
 
             <div id="cus_info" className="">

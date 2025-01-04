@@ -1,5 +1,6 @@
 "use client";
 
+import TobBar from "@/components/TobBar";
 import React from "react";
 
 export default function RootLayout({
@@ -7,5 +8,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <main className="px-6 pb-6">{children}</main>;
+  return (
+    <>
+      <TobBar />
+      <main className="px-6 pb-6">{children}</main>;
+    </>
+  );
 }

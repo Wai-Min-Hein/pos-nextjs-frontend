@@ -53,6 +53,7 @@ export const counterSlice = createSlice({
       if(state.lastResetDate != today){
         state.orderId=1
         state.lastResetDate = today
+        state.menus =[]
       }
     },
     addConfirmedOrder : (state ,action: PayloadAction<Order>) => {

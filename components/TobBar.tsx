@@ -26,7 +26,7 @@ import { BiLogOutCircle } from "react-icons/bi";
 
 const TobBar = () => {
   return (
-    <nav className="flex items-center justify-start py-2 gap-6">
+    <nav className="flex items-center justify-start py-2 gap-6 sticky top-0 bg-white z-[100]">
       <div className="basis-1/5 ">
         <Link href={"/system/fnb"}>
           <div className="relative w-24 h-12">

@@ -11,6 +11,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
+
 // Define types for menu items
 interface ListItem {
   name: string;
@@ -43,7 +44,7 @@ const SideNav = () => {
   }, [pathName]);
 
   return (
-    <nav className="basis-1/5 flex items-between justify-start flex-col max-h-[90vh] overflow-y-auto overflow-x-hidden sideNav-scrollbar ">
+    <nav className="basis-1/5 flex items-between justify-start flex-col overflow-y-auto overflow-x-hidden sideNav-scrollbar sticky top-[64px]">
       <Accordion
         type="single"
         collapsible

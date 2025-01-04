@@ -7,7 +7,7 @@ import React from 'react'
 const StoreWrapper = ({children}: {children:React.ReactNode}) => {
   return (
     <StoreProvider>
-        <TobBar />
+        {/* <TobBar /> */}
         {children}
     </StoreProvider>
   )

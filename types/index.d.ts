@@ -1,5 +1,16 @@
 import { StaticImageData } from "next/image";
 
+declare type registerUserInterface = {
+  userName: string;
+  email: string;
+  password: string;
+}
+
+declare type loginUserInterface = {
+  email: string;
+  password: string;
+}
+
 declare  type menuListInterface = {
     id: string;
     name: string;

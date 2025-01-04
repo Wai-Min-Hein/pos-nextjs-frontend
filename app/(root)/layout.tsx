@@ -8,12 +8,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main className="px-6">
-      <section className="flex items-start justify-start  ">
-        <SideNav />
-        <Toaster/>
-        {children}
-      </section>
-    </main>
+    <>
+      <TobBar />
+
+      <main className="px-6">
+        <section className="flex items-start justify-start">
+          <SideNav />
+          <Toaster />
+          {children}
+        </section>
+      </main>
+    </>
   );
 }

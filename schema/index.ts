@@ -1,6 +1,17 @@
 import { z } from "zod";
 
 
+export const registerSchema = z.object({
+  userName: z.string().min(1, { message: "User name must be included." }),
+  email: z.string().min(1, { message: "Email must be included." }).email({ message: "Invalid email address." }),
+  password: z.string().min(1, { message: "Password must be included." }),
+});
+export const loginSchema = z.object({
+  email: z.string().min(1, { message: "Email must be included." }).email({ message: "Invalid email address." }),
+  password: z.string().min(1, { message: "Password must be included." }),
+});
+
+
 export const fnbSchema = z.object({
   name: z.string().min(1, { message: "Name must be included." }),
   image: z.string().optional(),
