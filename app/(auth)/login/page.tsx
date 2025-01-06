@@ -42,7 +42,10 @@ const Login = () => {
     mutationFn: async (data: loginUserInterface) => {
       try {
         const res = await axiosInstance.post(`/auth/signIn`, data)
-        router.push("/system/fnb")
+        const token = res.data.token
+        await axios.post('/api/set-cookies', { token });
+
+        // router.push("/system/fnb")
       } catch (error) {
         console.log(error);
         

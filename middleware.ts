@@ -11,10 +11,9 @@ export default function middleware(req: NextRequest) {
 
 
   let token = req.cookies.get('token')?.value
-  console.log("token: ", token)
 
 
-  // Redirect based on authentication
+//   Redirect based on authentication
   if (!isPublicRoute && !token) {
     return NextResponse.redirect(new URL('/login', req.nextUrl));
   }
