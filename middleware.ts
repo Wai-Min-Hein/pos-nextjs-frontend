@@ -11,14 +11,10 @@ export default function middleware(req: NextRequest) {
   const isPublicRoute = publicRoutes.includes(path);
 
 
-  // let token = req.cookies.get('token')?.value
-  // console.log("token: ", token)
-
-  const cookieStore = cookies();
-  const token = cookieStore.get('token');
+  let token = req.cookies.get('token')?.value
 
 
-  // Redirect based on authentication
+//   Redirect based on authentication
   if (!isPublicRoute && !token) {
     return NextResponse.redirect(new URL('/login', req.nextUrl));
   }
