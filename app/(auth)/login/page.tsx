@@ -45,7 +45,7 @@ const Login = () => {
         const token = res.data.token
         await axios.post('/api/set-cookies', { token });
 
-        // router.push("/system/fnb")
+        router.push("/system/fnb")
       } catch (error) {
         console.log(error);
         
