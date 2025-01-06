@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 // Public routes that should not be protected
-const publicRoutes = ['/login', '/register'];
+const publicRoutes = ["/login", "/register"];
 
 export default function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
@@ -9,16 +9,14 @@ export default function middleware(req: NextRequest) {
   // Check if the route is public
   const isPublicRoute = publicRoutes.includes(path);
 
+  let token = req.cookies.get("token")?.value;
 
-  let token = req.cookies.get('token')?.value
-
-
-//   Redirect based on authentication
+  //   Redirect based on authentication
   if (!isPublicRoute && !token) {
-    return NextResponse.redirect(new URL('/login', req.nextUrl));
+    return NextResponse.redirect(new URL("/login", req.nextUrl));
   }
   if (isPublicRoute && token) {
-    return NextResponse.redirect(new URL('/system/fnb', req.nextUrl));
+    return NextResponse.redirect(new URL("/system/fnb", req.nextUrl));
   }
 
   return NextResponse.next();
@@ -26,8 +24,8 @@ export default function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image).*)', // Exclude api and static resources
-    '/login',
-    '/register',
+    "/((?!api|_next/static|_next/image).*)", // Exclude api and static resources
+    "/login",
+    "/register",
   ],
 };
