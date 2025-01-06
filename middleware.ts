@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
 // Public routes that should not be protected
 const publicRoutes = ['/login', '/register'];
@@ -10,8 +11,11 @@ export default function middleware(req: NextRequest) {
   const isPublicRoute = publicRoutes.includes(path);
 
 
-  let token = req.cookies.get('token')?.value
-  console.log("token: ", token)
+  // let token = req.cookies.get('token')?.value
+  // console.log("token: ", token)
+
+  const cookieStore = cookies();
+  const token = cookieStore.get('token');
 
 
   // Redirect based on authentication
