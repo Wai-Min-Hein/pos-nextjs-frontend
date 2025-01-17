@@ -11,6 +11,11 @@ declare type loginUserInterface = {
   password: string;
 }
 
+declare type permissionInterface = {
+  module: string;
+  permissions: string[];
+}
+
 declare  type menuListInterface = {
     id: string;
     name: string;
@@ -20,6 +25,7 @@ declare  type menuListInterface = {
       icon: StaticImageData;
       href?: string;
       baseRoute?: boolean;
+      module?: string;
     }[];
   }
 

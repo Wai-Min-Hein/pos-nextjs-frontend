@@ -5,11 +5,43 @@ import {
   priceTableMenuInterface,
   posBillInterface,
   posBillReportInterface,
+  permissionInterface,
 } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
 
 const baseApi = process.env.NEXT_PUBLIC_BASE_API;
+
+
+async function getUserPermission(): Promise<permissionInterface[]> {
+  try {
+    const res = await fetch(`${baseApi}/permissionsroles/user`, {
+      method: 'GET',
+      credentials: 'include', // Include cookies in requests
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+
+    const result = await res.json();
+    if (!res.ok) {
+      throw new Error(`${result.message}`);
+    }
+
+    
+    return result.permissions;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const useGetUserPermission = () => {
+  return useQuery({
+    queryKey: ["user_permission"],
+    queryFn: () => getUserPermission(),
+  });
+};
 
 
 async function getAllFnb(): Promise<fnbInterface[]> {
@@ -23,12 +55,12 @@ async function getAllFnb(): Promise<fnbInterface[]> {
     });
 
 
+    const result = await res.json();
     if (!res.ok) {
-      throw new Error(`Error fetching data: ${res.status} ${res.statusText}`);
+      throw new Error(`${result.message}`);
     }
 
     
-    const result = await res.json();
     return result.datas;
   } catch (error) {
     throw error;

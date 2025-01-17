@@ -7,6 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { menuList } from "@/constant/sideNav";
+import { useGetUserPermission } from "@/utils/TanStackHooks/useSystem";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -28,6 +29,15 @@ interface Menu {
 const SideNav = () => {
   const router = useRouter();
   const pathName = usePathname();
+
+  const {data: permissions, error} = useGetUserPermission()
+
+
+  const allowModules = permissions?.map(permission => permission?.module)
+
+
+
+
 
   // Set open item based on pathname
   const toOpenItem = menuList.filter((list) => pathName.includes(list.id));
@@ -55,8 +65,10 @@ const SideNav = () => {
           <AccordionItem key={menu.id} value={menu.id}>
             <AccordionTrigger>{menu.name}</AccordionTrigger>
 
-            {menu.lists.map((list) => (
-              <AccordionContent key={list.name}>
+            {menu.lists.map((list) =>{
+              if( list?.module && allowModules?.includes(list?.module)){
+                return (
+                  <AccordionContent key={list.name}>
                 <div
                   onClick={() => router.push(list.href || "/")}
                   className={`flex items-center justify-start gap-2 cursor-pointer py-3 ${
@@ -77,7 +89,11 @@ const SideNav = () => {
                   <h4 className="font-roboto select-none">{list.name}</h4>
                 </div>
               </AccordionContent>
-            ))}
+                )
+              }
+            }
+              
+            )}
           </AccordionItem>
         ))}
       </Accordion>

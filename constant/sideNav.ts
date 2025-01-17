@@ -41,12 +41,14 @@ export const menuList: menuListInterface[] = [
         icon: fnb,
         href: "/system/fnb",
         baseRoute: true,
+        module: 'Fnb'
       },
 
       {
         name: "Menu Category",
         icon: menu,
         href: "/system/menucategory",
+        module: 'MenuCategory'
       },
       {
         name: "Branch List",

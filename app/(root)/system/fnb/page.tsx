@@ -18,34 +18,33 @@ import { MdDeleteOutline } from "react-icons/md";
 import ActionHeader from "@/components/ActionHeader";
 import { useGetAllFnb } from "@/utils/TanStackHooks/useSystem";
 import { useRouter } from "next/navigation";
-import {useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
 const FnB = () => {
-  const { data: fnbDatas, isLoading } = useGetAllFnb();
+  const { data: fnbDatas, isLoading, isError, error } = useGetAllFnb();
 
   const baseApi = process.env.NEXT_PUBLIC_BASE_API;
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const singleDeleteMutation = useMutation({
     mutationFn: async (id: string) => {
       try {
-        const res = await axios.delete(`${baseApi}/fnb/${id}`)
+        const res = await axios.delete(`${baseApi}/fnb/${id}`);
       } catch (error) {
         console.log(error);
-        
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['fnb']}),
-      queryClient.invalidateQueries({ queryKey: ['pricetable'] });
-    }
-  })
+      queryClient.invalidateQueries({ queryKey: ["fnb"] }),
+        queryClient.invalidateQueries({ queryKey: ["pricetable"] });
+    },
+  });
 
-  const router = useRouter()
+  const router = useRouter();
 
   const handleAddClick = (): void => {
-    router.push('fnb/new')
+    router.push("fnb/new");
   };
 
   const handleImportClick = (): void => {
@@ -53,8 +52,22 @@ const FnB = () => {
   };
 
   const handleSingleDelete = (id: string): void => {
+    singleDeleteMutation.mutate(id);
+  };
 
-    singleDeleteMutation.mutate(id)
+  if (isError ) {
+    return (
+      <div className="flex-1 p-4 ">
+        <ActionHeader
+          title="FnB Menus List"
+          description="Manage FnB Menus"
+          excelIcon={excel}
+          handleAddClick={handleAddClick}
+          handleImportClick={handleImportClick}
+        />
+        <div className="">{error.message}</div>
+      </div>
+    );
   }
 
   if (isLoading) {
@@ -104,12 +117,14 @@ const FnB = () => {
               <TableCell className="font-medium">{fnb.createdByName}</TableCell>
               <TableCell className="font-medium">
                 <div className="flex items-center justify-center gap-x-2">
-                  
                   <div className="w-8 h-8 grid place-items-center rounded border-2 border-gray cursor-pointer">
                     <TbEdit />
                   </div>
 
-                  <div onClick={() => handleSingleDelete(fnb?._id as string)} className="w-8 h-8 grid place-items-center rounded border-2 border-gray cursor-pointer">
+                  <div
+                    onClick={() => handleSingleDelete(fnb?._id as string)}
+                    className="w-8 h-8 grid place-items-center rounded border-2 border-gray cursor-pointer"
+                  >
                     <MdDeleteOutline />
                   </div>
                 </div>
@@ -119,7 +134,6 @@ const FnB = () => {
         </TableBody>
       </Table>
     </div>
-    
   );
 };
 
