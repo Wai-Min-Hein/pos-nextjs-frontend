@@ -12,6 +12,7 @@ const axiosInstance = axios.create({
 // Add a response interceptor
 axiosInstance.interceptors.response.use(async function (response) {
   const accessToken = response.data.accessToken
+
   if (accessToken) {
     // Set the Authorization header for all future requests
     axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
@@ -28,9 +29,10 @@ axiosInstance.interceptors.response.use(async function (response) {
   if (error.response?.status === 401 && !originalRequest._retry) {
     originalRequest._retry = true; // Mark the request as retried
 
+
     try {
       // Attempt to refresh the access token
-      const refreshResponse = await axios.post('api/auth/refresh', {}, { withCredentials: true });
+      const refreshResponse = await axios.post(`${baseApi}/auth/refresh`, {}, { withCredentials: true });
 
       const newAccessToken = refreshResponse.data.accessToken;
 
@@ -46,7 +48,7 @@ axiosInstance.interceptors.response.use(async function (response) {
         return axiosInstance(originalRequest);
       }
     } catch (refreshError) {
-      console.error('Failed to refresh access token:', refreshError);
+      console.log('Failed to refresh access token:', refreshError);
 
       // Redirect to login if token refresh fails
       const router = useRouter();

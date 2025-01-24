@@ -14,9 +14,9 @@ export default function middleware(req: NextRequest) {
 
 
   //   Redirect based on authentication
-  if (!isPublicRoute && !token) {
-    return NextResponse.redirect(new URL("/login", req.nextUrl));
-  }
+  // if (!isPublicRoute && !token) {
+  //   return NextResponse.redirect(new URL("/login", req.nextUrl));
+  // }
   if (isPublicRoute && token) {
     return NextResponse.redirect(new URL("/system/fnb", req.nextUrl));
   }
