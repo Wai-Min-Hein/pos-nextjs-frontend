@@ -6,10 +6,12 @@ const publicRoutes = ["/login", "/register"];
 export default function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
+
   // Check if the route is public
   const isPublicRoute = publicRoutes.includes(path);
 
-  let token = req.cookies.get("token")?.value;
+  let token = req.cookies.get("accessToken")?.value;
+
 
   //   Redirect based on authentication
   if (!isPublicRoute && !token) {

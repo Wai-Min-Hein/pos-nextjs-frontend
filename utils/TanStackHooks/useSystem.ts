@@ -1,3 +1,4 @@
+import axiosInstance from "@/lib/axiosInstance";
 import {
   menuCategoryInterface,
   fnbInterface,
@@ -14,27 +15,44 @@ const baseApi = process.env.NEXT_PUBLIC_BASE_API;
 
 
 async function getUserPermission(): Promise<permissionInterface[]> {
+  // try {
+  //   const res = await fetch(`${baseApi}/permissionsroles/user`, {
+  //     method: 'GET',
+  //     credentials: 'include', // Include cookies in requests
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //   });
+
+
+  //   const result = await res.json();
+  //   if (!res.ok) {
+  //     throw new Error(`${result.message}`);
+  //   }
+
+    
+  //   return result.permissions;
+  // } catch (error) {
+  //   throw error;
+  // }
+
+
   try {
-    const res = await fetch(`${baseApi}/permissionsroles/user`, {
-      method: 'GET',
-      credentials: 'include', // Include cookies in requests
+    const res = await axiosInstance.get('/permissionsroles/user', {
       headers: {
         'Content-Type': 'application/json',
       },
     });
-
-
-    const result = await res.json();
-    if (!res.ok) {
-      throw new Error(`${result.message}`);
-    }
-
-    
+  
+    const result = res.data
     return result.permissions;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    const message = error.response?.data?.message || error.message || 'An error occurred';
+    throw new Error(message);
   }
 }
+
+
 
 export const useGetUserPermission = () => {
   return useQuery({
@@ -44,26 +62,41 @@ export const useGetUserPermission = () => {
 };
 
 
+// async function getAllFnb(): Promise<fnbInterface[]> {
+//   try {
+//     const res = await fetch(`${baseApi}/fnb`, {
+//       method: 'GET',
+//       credentials: 'include', // Include cookies in requests
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//     });
+
+
+//     const result = await res.json();
+//     if (!res.ok) {
+//       throw new Error(`${result.message}`);
+//     }
+
+    
+//     return result.datas;
+//   } catch (error) {
+//     throw error;
+//   }
+// }
+
 async function getAllFnb(): Promise<fnbInterface[]> {
   try {
-    const res = await fetch(`${baseApi}/fnb`, {
-      method: 'GET',
-      credentials: 'include', // Include cookies in requests
+    const res = await axiosInstance.get('/fnb', {
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
-
-    const result = await res.json();
-    if (!res.ok) {
-      throw new Error(`${result.message}`);
-    }
-
-    
-    return result.datas;
-  } catch (error) {
-    throw error;
+    return res.data.datas; // Assuming `datas` contains the desired array
+  } catch (error: any) {
+    const message = error.response?.data?.message || error.message || 'An error occurred';
+    throw new Error(message);
   }
 }
 

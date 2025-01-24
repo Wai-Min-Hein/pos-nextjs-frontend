@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import axiosInstance from "@/lib/axiosInstance";
 import { loginSchema } from "@/schema";
 import { loginUserInterface } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,17 +34,15 @@ const Login = () => {
     },
   });
 
-  const axiosInstance = axios.create({
-    baseURL: baseApi,
-    withCredentials: true, // Include cookies
-  });
+  // const axiosInstance = axios.create({
+  //   baseURL: baseApi,
+  //   withCredentials: true, // Include cookies
+  // });
 
   const mutation = useMutation({
     mutationFn: async (data: loginUserInterface) => {
       try {
         const res = await axiosInstance.post(`/auth/signIn`, data)
-        const token = res.data.token
-        await axios.post('/api/set-cookies', { token });
 
         router.push("/system/fnb")
       } catch (error) {
