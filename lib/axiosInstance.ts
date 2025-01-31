@@ -48,13 +48,9 @@ axiosInstance.interceptors.response.use(async function (response) {
         return axiosInstance(originalRequest);
       }
     } catch (refreshError) {
-      console.log('Failed to refresh access token:', refreshError);
-
-      // Redirect to login if token refresh fails
-      const router = useRouter();
-      router.push('/login');
       return Promise.reject(refreshError);
     }
+
   }
 
   // If the error is not a 401 or token refresh fails, reject the error

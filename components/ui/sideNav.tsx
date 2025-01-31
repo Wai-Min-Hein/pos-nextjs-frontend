@@ -33,9 +33,11 @@ const SideNav = () => {
   const {data: permissions, error} = useGetUserPermission()
 
 
-  const allowModules = permissions?.map(permission => permission?.module)
+  const allowModules = permissions?.map(permission => permission.module)
 
-
+  const filteredMenuList = menuList.filter(menu => 
+    menu.lists.some(list => allowModules?.includes(list.module))
+  );
 
 
 
@@ -61,7 +63,7 @@ const SideNav = () => {
         value={openItem}
         onValueChange={setOpenItem}
       >
-        {menuList.map((menu) => (
+        {filteredMenuList.map((menu) => (
           <AccordionItem key={menu.id} value={menu.id}>
             <AccordionTrigger>{menu.name}</AccordionTrigger>
 

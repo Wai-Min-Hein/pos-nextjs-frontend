@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     secure: process.env.NODE_ENV === 'production', // Use secure only in production
     sameSite: 'lax', // Allow cross-origin usage
     path: '/', // Cookie path
-    maxAge: 5*60, // 1 hr expiration
+    maxAge: 5* 60, // 5m expiration
   });
 
   return NextResponse.json({ message: 'AccessToken set successfully!' });

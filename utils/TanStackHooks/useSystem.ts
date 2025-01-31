@@ -128,6 +128,10 @@ async function getAllPriceTable(): Promise<priceTableInterface[]> {
   try {
     const res = await fetch(`${baseApi}/pricetable`);
     const result = await res.json();
+    if(result.statusCode == 403){
+      console.log(result.statusCode)
+      window.location.href = '/invalid';
+    }
     return result.datas;
   } catch (error) {
     throw error;
