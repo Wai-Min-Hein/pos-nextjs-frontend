@@ -20,24 +20,22 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { ClipLoader } from 'react-spinners';
+
 
 const Login = () => {
   const router = useRouter()
 
-  const baseApi = process.env.NEXT_PUBLIC_BASE_API;
-
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "waiminhein@gmail.com",
-      password: "111111",
+      // email: "waiminhein@gmail.com",
+      // password: "111111",
+      email: "admin@gmail.com",
+      password: "admin19002137",
     },
   });
 
-  // const axiosInstance = axios.create({
-  //   baseURL: baseApi,
-  //   withCredentials: true, // Include cookies
-  // });
 
   const mutation = useMutation({
     mutationFn: async (data: loginUserInterface) => {
@@ -55,6 +53,7 @@ const Login = () => {
   function onSubmit(formData: z.infer<typeof loginSchema>) {
     mutation.mutate(formData);
   }
+
 
   return (
     <div>
@@ -89,7 +88,9 @@ const Login = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit">Submit</Button>
+            <Button disabled={mutation.isPending} type="submit">
+            {mutation.isPending ? <ClipLoader size={20} color="#ffffff" /> : 'Login'}
+            </Button>
           </form>
         </Form>
       </div>

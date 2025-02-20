@@ -7,6 +7,8 @@ import {
   posBillInterface,
   posBillReportInterface,
   permissionInterface,
+  userRoleInterface,
+  productInterface,
 } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
@@ -14,28 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 const baseApi = process.env.NEXT_PUBLIC_BASE_API;
 
 
-async function getUserPermission(): Promise<permissionInterface[]> {
-  // try {
-  //   const res = await fetch(`${baseApi}/permissionsroles/user`, {
-  //     method: 'GET',
-  //     credentials: 'include', // Include cookies in requests
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //   });
-
-
-  //   const result = await res.json();
-  //   if (!res.ok) {
-  //     throw new Error(`${result.message}`);
-  //   }
-
-    
-  //   return result.permissions;
-  // } catch (error) {
-  //   throw error;
-  // }
-
+async function getUserPermission(): Promise<userRoleInterface> {
 
   try {
     const res = await axiosInstance.get('/permissionsroles/user', {
@@ -45,7 +26,7 @@ async function getUserPermission(): Promise<permissionInterface[]> {
     });
   
     const result = res.data
-    return result.permissions;
+    return result;
   } catch (error: any) {
     const message = error.response?.data?.message || error.message || 'An error occurred';
     throw new Error(message);
@@ -61,29 +42,6 @@ export const useGetUserPermission = () => {
   });
 };
 
-
-// async function getAllFnb(): Promise<fnbInterface[]> {
-//   try {
-//     const res = await fetch(`${baseApi}/fnb`, {
-//       method: 'GET',
-//       credentials: 'include', // Include cookies in requests
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//     });
-
-
-//     const result = await res.json();
-//     if (!res.ok) {
-//       throw new Error(`${result.message}`);
-//     }
-
-    
-//     return result.datas;
-//   } catch (error) {
-//     throw error;
-//   }
-// }
 
 async function getAllFnb(): Promise<fnbInterface[]> {
   try {
@@ -185,6 +143,35 @@ export const useGetSinglePriceTable = (id: string) => {
     queryFn: () => getSinglePriceTable(id),
   });
 };
+
+
+
+async function getAllProduct(): Promise<productInterface[]> {
+  try {
+    const res = await axiosInstance.get('/product', {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return res.data.datas; // Assuming `datas` contains the desired array
+  } catch (error: any) {
+    const message = error.response?.data?.message || error.message || 'An error occurred';
+    throw new Error(message);
+  }
+}
+
+export const useGetAllProduct = () => {
+  return useQuery({
+    queryKey: ["products"],
+    queryFn: () => getAllProduct(),
+  });
+};
+
+
+
+
+
 
 async function  getAllPosSaleReports(): Promise<posBillReportInterface[]> {
   try {

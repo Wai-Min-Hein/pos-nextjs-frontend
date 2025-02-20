@@ -12,7 +12,6 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
-
 // Define types for menu items
 interface ListItem {
   name: string;
@@ -30,16 +29,20 @@ const SideNav = () => {
   const router = useRouter();
   const pathName = usePathname();
 
-  const {data: permissions, error} = useGetUserPermission()
+  const { data, error } = useGetUserPermission();
+  const permissions = data?.permissions;
+  const roleName = data?.roleName;
 
+  const allowModules = permissions?.map((permission) => permission.module);
 
-  const allowModules = permissions?.map(permission => permission.module)
-
-  const filteredMenuList = menuList.filter(menu => 
-    menu.lists.some(list => allowModules?.includes(list.module))
-  );
-
-
+  const filteredMenuList =
+    roleName == "admin"
+      ? menuList
+      : menuList.filter((menu) =>
+          menu.lists.some(
+            (list) => list.module && allowModules?.includes(list.module)
+          )
+        );
 
   // Set open item based on pathname
   const toOpenItem = menuList.filter((list) => pathName.includes(list.id));
@@ -67,35 +70,42 @@ const SideNav = () => {
           <AccordionItem key={menu.id} value={menu.id}>
             <AccordionTrigger>{menu.name}</AccordionTrigger>
 
-            {menu.lists.map((list) =>{
-              if( list?.module && allowModules?.includes(list?.module)){
-                return (
-                  <AccordionContent key={list.name}>
-                <div
-                  onClick={() => router.push(list.href || "/")}
-                  className={`flex items-center justify-start gap-2 cursor-pointer py-3 ${
-                    list.href && pathName.includes(list.href)
-                      ? "bg-transparentBgGreen"
-                      : ""
-                  }`}
-                >
-                  <div className="relative w-6 h-6">
-                    <Image
-                      src={list.icon}
-                      fill
-                      sizes="24px" 
-                      style={{ objectFit: "cover" }}
-                      alt="Icon"
-                    />
-                  </div>
-                  <h4 className="font-roboto select-none">{list.name}</h4>
-                </div>
-              </AccordionContent>
-                )
+            {menu.lists.map((list) => {
+              const isAdmin = roleName === "admin";
+              const isActive = list.href && pathName.includes(list.href);
+
+              // Always render for admin, check permissions for others
+              if (!isAdmin) {
+                const hasModuleAccess =
+                  list?.module && allowModules?.includes(list.module);
+                if (!hasModuleAccess) return null;
               }
-            }
-              
-            )}
+
+              return (
+                <AccordionContent key={`${menu.id}-${list.name}`}>
+                  <div
+                    onClick={() => router.push(list.href || "/")}
+                    role="button"
+                    tabIndex={0}
+                    className={`flex items-center justify-start gap-2 cursor-pointer py-3 ${
+                      isActive ? "bg-transparentBgGreen" : ""
+                    }`}
+                  >
+                    <div className="relative w-6 h-6">
+                      <Image
+                        src={list.icon}
+                        fill
+                        sizes="24px"
+                        style={{ objectFit: "cover" }}
+                        alt={`${list.name} icon`}
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <h4 className="font-roboto select-none">{list.name}</h4>
+                  </div>
+                </AccordionContent>
+              );
+            })}
           </AccordionItem>
         ))}
       </Accordion>
